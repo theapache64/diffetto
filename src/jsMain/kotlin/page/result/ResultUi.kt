@@ -55,18 +55,6 @@ fun ResultPage(
                 P {
                     Text("Type something in the input field to search the table :")
                 }
-                Input(
-                    type = InputType.Text,
-                ) {
-                    classes("form-control")
-                    id("search-input")
-                    placeholder("Search...")
-                    value(viewModel.searchKeyword)
-                    onInput { textInput ->
-                        viewModel.onSearchKeywordChanged(textInput.value)
-                    }
-                }
-                Br()
                 Div(
                     attrs = {
                         classes("table-responsive")
@@ -76,6 +64,7 @@ fun ResultPage(
                         attrs = {
                             classes("table", "table-bordered")
                             attr("data-toggle", "table")
+                            attr("data-search", "true")
                         }
                     ) {
                         Thead {
