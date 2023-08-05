@@ -6,8 +6,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import kotlinx.browser.window
+import org.w3c.dom.url.URL
 import repo.CacheRepo
 import repo.PivotRepo
+import kotlin.js.Date
 
 class InputViewModel(
     val pivotRepo: PivotRepo,
@@ -15,6 +17,7 @@ class InputViewModel(
 ) {
 
     companion object {
+        const val KEY_LOCAL_CACHE_KEY = "local_cache_key"
         private const val KEY_BEFORE_CACHE = "before_cache"
         private const val KEY_AFTER_CACHE = "after_cache"
 
@@ -49,6 +52,7 @@ HWUI:androidx.appcompat.widget.ContentFrameLayout	1s 454ms 936us 375ns	null	2	ar
 
     var pivotData by mutableStateOf(
         PivotData(
+            "",
             cacheRepo.getString(KEY_BEFORE_CACHE) ?: DEFAULT_BEFORE_INPUT,
             cacheRepo.getString(KEY_AFTER_CACHE) ?: DEFAULT_AFTER_INPUT,
         )
@@ -63,7 +67,6 @@ HWUI:androidx.appcompat.widget.ContentFrameLayout	1s 454ms 936us 375ns	null	2	ar
 
     fun onAfterInputChanged(newInput: String) {
         pivotData = pivotData.copy(after = newInput)
-        console.log(newInput)
         cacheRepo.saveString(KEY_AFTER_CACHE, newInput)
     }
 
@@ -75,9 +78,16 @@ HWUI:androidx.appcompat.widget.ContentFrameLayout	1s 454ms 936us 375ns	null	2	ar
             return
         }
 
-
+        var name = window.prompt("Give it a name!")
+        if (name.isNullOrBlank()) {
+            name = Date().toString()
+        }
+        pivotData = pivotData.copy(name = name)
         val localCacheKey = pivotRepo.savePivotData(pivotData)
-        window.alert(localCacheKey)
+        val newUrl = URL(window.location.href)
+        newUrl.searchParams.set(KEY_LOCAL_CACHE_KEY, localCacheKey)
+
+        window.open(newUrl.href, "_blank")
     }
 
 

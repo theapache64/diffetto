@@ -5,10 +5,6 @@ import kotlinx.browser.window
 import org.w3c.dom.get
 
 interface PivotRepo {
-    companion object {
-        const val KEY_LOCAL_CACHE_KEY = "local_cache_key"
-    }
-
     fun savePivotData(pivotData: PivotData): String
     fun getPivotData(key: String): PivotData?
 }

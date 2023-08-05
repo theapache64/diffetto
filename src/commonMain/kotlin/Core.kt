@@ -58,17 +58,17 @@ object Core {
     """.trimIndent()
     }
 
-    fun diff(oldTable: List<PivotTableRow>, newTable: List<PivotTableRow>): List<DiffTableRow> {
+    fun diff(beforeTable: List<PivotTableRow>, afterTable: List<PivotTableRow>): List<DiffTableRow> {
         val diffList = mutableListOf<DiffTableRow>()
 
-        val names = oldTable.map { it.name }.toMutableList()
-            .apply { addAll(newTable.map { it.name }) }
+        val names = beforeTable.map { it.name }.toMutableList()
+            .apply { addAll(afterTable.map { it.name }) }
             .toSet()
 
         for (name in names) {
 
-            val oldRow = oldTable.find { it.name == name }
-            val newRow = newTable.find { it.name == name }
+            val oldRow = beforeTable.find { it.name == name }
+            val newRow = afterTable.find { it.name == name }
             var diffInMs = "-"
 
 

@@ -15,6 +15,7 @@ data class DiffTableRow(
 )
 
 data class PivotData(
+    val name : String,
     val before : String,
     val after : String
 )
