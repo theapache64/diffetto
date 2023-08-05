@@ -16,7 +16,9 @@ import kotlin.js.Date
 sealed interface ResultUiState {
     data object Idle : ResultUiState
     data class Success(
-        val name: String, val diffTable: List<DiffTableRow>, val createdAt: Int // Workaround to trigger recomposition
+        val name: String,
+        val diffTable: List<DiffTableRow>,
+        val createdAt: Int // Workaround to trigger recomposition
     ) : ResultUiState
 }
 
@@ -25,6 +27,9 @@ class ResultViewModel(
 ) {
 
     var errorMsg by mutableStateOf("")
+        private set
+
+    var searchKeyword by mutableStateOf("")
         private set
 
     var uiState by mutableStateOf<ResultUiState>(ResultUiState.Idle)
@@ -54,7 +59,7 @@ class ResultViewModel(
         // Then build the result
         val beforeTable = pivotData.before.toTable()
         val afterTable = pivotData.after.toTable()
-        val diffTable = diff(beforeTable, afterTable)
+        val diffTable = diff(beforeTable, afterTable).applySearch(searchKeyword)
 
         if (diffTable.isEmpty()) {
             errorMsg = "Something went wrong. Diff table looks empty 🤔"
@@ -64,9 +69,30 @@ class ResultViewModel(
         updateState(ResultUiState.Success(pivotData.resultName, diffTable, -1))
     }
 
+    fun onSearchKeywordChanged(value: String) {
+        console.log("Search: '$value'")
+        this.searchKeyword = value.trim()
+        val successState = uiState as? ResultUiState.Success ?: return
+        val newState = successState.copy(diffTable = successState.diffTable.applySearch(searchKeyword))
+        updateState(newState)
+    }
 
     private fun updateState(newState: ResultUiState.Success) {
         uiState = newState.copy(createdAt = Date().getMilliseconds())
+    }
+}
+
+private fun List<DiffTableRow>.applySearch(keyword: String): List<DiffTableRow> {
+    return if (keyword.isBlank()) {
+        this.onEach { row ->
+            row.isVisible = true
+        }
+    } else {
+        this.onEach { row ->
+            row.isVisible = row.name.contains(keyword, ignoreCase = true).also {
+                console.log("${row.name} -> $it")
+            }
+        }
     }
 }
 
