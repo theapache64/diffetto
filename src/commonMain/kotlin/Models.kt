@@ -13,7 +13,6 @@ data class DiffTableRow(
     val afterTimestamp: String,
     val diff: Int?,
     val countDiff: String,
-    var isVisible: Boolean,
     var isLargest: Boolean,
     var isSmallest: Boolean
 )

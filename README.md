@@ -10,10 +10,6 @@
 
 > An extension web app for Perfetto
 
-## 💻 Demo (TBD)
-
-![](demo.gif)
-
 ## 🏃 Run
 
 ```

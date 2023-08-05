@@ -90,25 +90,22 @@ fun ResultPage(
                             }
                         ) {
                             uiState.diffTable.forEach { row ->
-                                console.log("\uD83D\uDCBB ${row.name} -> ${row.isVisible}")
-                                if (row.isVisible) {
-                                    key(row.name) {
-                                        Tr {
-                                            Td {
-                                                val emoji = when {
-                                                    row.isLargest -> "🔴 "
-                                                    row.isSmallest -> "🟠 "
-                                                    else -> ""
-                                                }
-                                                Text("$emoji${row.name}")
+                                key(row.name) {
+                                    Tr {
+                                        Td {
+                                            val emoji = when {
+                                                row.isLargest -> "🔴 "
+                                                row.isSmallest -> "🟠 "
+                                                else -> ""
                                             }
-                                            Td { Text(row.beforeTimestamp) }
-                                            Td { Text(row.afterTimestamp) }
-                                            Td {
-                                                Text("${row.diff ?: 0}")
-                                            }
-                                            Td { Text(row.countDiff) }
+                                            Text("$emoji${row.name}")
                                         }
+                                        Td { Text(row.beforeTimestamp) }
+                                        Td { Text(row.afterTimestamp) }
+                                        Td {
+                                            Text("${row.diff ?: 0}")
+                                        }
+                                        Td { Text(row.countDiff) }
                                     }
                                 }
                             }

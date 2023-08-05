@@ -43,7 +43,6 @@ object Core {
                 afterTimestamp = newRow?.timestamp ?: "-",
                 diff = diffInMs,
                 countDiff = diffCount,
-                isVisible = false,
                 isLargest = false,
                 isSmallest = false
             )
