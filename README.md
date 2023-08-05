@@ -10,7 +10,7 @@
 
 > An extension web app for Perfetto
 
-## 💻 Demo
+## 💻 Demo (TBD)
 
 ![](demo.gif)
 
@@ -25,6 +25,9 @@
 ```
 ./gradlew jsBrowserDistribution // and then open index.html (build/distributions)
 ```
+
+## 🔗 Links
+- Board : https://trello.com/b/SXFktZUo/diffetto
 
 ## ✍️ Author
 
