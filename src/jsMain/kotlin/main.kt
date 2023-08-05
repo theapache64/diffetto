@@ -1,34 +1,19 @@
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import org.jetbrains.compose.web.css.padding
-import org.jetbrains.compose.web.css.px
-import org.jetbrains.compose.web.dom.Button
-import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.Span
-import org.jetbrains.compose.web.dom.Text
+import kotlinx.browser.window
 import org.jetbrains.compose.web.renderComposable
+import page.input.InputPage
+import page.result.ResultPage
+import repo.PivotRepo
 
 fun main() {
-    var count by mutableStateOf(0)
-
     renderComposable(rootElementId = "root") {
-        Div({ style { padding(25.px) } }) {
-            Button(attrs = {
-                onClick { count -= 1 }
-            }) {
-                Text("-")
-            }
-
-            Span({ style { padding(15.px) } }) {
-                Text("$count")
-            }
-
-            Button(attrs = {
-                onClick { count += 1 }
-            }) {
-                Text("+")
-            }
+        // redirector
+        val path = window.location.search
+        if (path.contains(PivotRepo.KEY_LOCAL_CACHE_KEY)) {
+            ResultPage()
+        } else {
+            InputPage()
         }
+        // input : path = empty
+        // result = result/$local_cache_key
     }
 }

@@ -13,6 +13,7 @@ repositories {
 }
 
 kotlin {
+    jvm()
     js(IR) {
         browser()
         binaries.executable()
@@ -20,8 +21,14 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                implementation(compose.web.core)
+                implementation(compose.html.core)
                 implementation(compose.runtime)
+            }
+        }
+
+        val jvmTest by getting {
+            dependencies {
+                implementation("junit:junit:4.13.2")
             }
         }
     }
