@@ -82,7 +82,7 @@ HWUI:androidx.appcompat.widget.ContentFrameLayout	1s 454ms 936us 375ns	null	2	ar
         if (name.isNullOrBlank()) {
             name = Date().toString()
         }
-        pivotData = pivotData.copy(name = name)
+        pivotData = pivotData.copy(resultName = name)
         val localCacheKey = pivotRepo.savePivotData(pivotData)
         val newUrl = URL(window.location.href)
         newUrl.searchParams.set(KEY_LOCAL_CACHE_KEY, localCacheKey)

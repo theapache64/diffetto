@@ -2,6 +2,7 @@
 plugins {
     kotlin("multiplatform") version "1.9.0"
     id("org.jetbrains.compose") version "1.4.3"
+    kotlin("plugin.serialization") version "1.9.0"
 }
 group = "com.github.theapache64.diffetto"
 version = "1.0.0-alpha01"
@@ -19,10 +20,18 @@ kotlin {
         binaries.executable()
     }
     sourceSets {
+
+        val commonMain by getting {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0-RC")
+            }
+        }
+
         val jsMain by getting {
             dependencies {
                 implementation(compose.html.core)
                 implementation(compose.runtime)
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0-RC")
             }
         }
 

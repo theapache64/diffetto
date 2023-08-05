@@ -2,6 +2,8 @@ package repo
 
 import PivotData
 import kotlinx.browser.window
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.w3c.dom.get
 
 interface PivotRepo {
@@ -13,13 +15,13 @@ class PivotRepoImpl : PivotRepo {
 
     override fun savePivotData(pivotData: PivotData): String {
         val key = generateRandomString(20)
-        window.localStorage.setItem(key, JSON.stringify(pivotData) )
+        window.localStorage.setItem(key, Json.encodeToString(pivotData))
         return key
     }
 
     override fun getPivotData(key: String): PivotData? {
         val jsonString = window.localStorage[key] ?: return null
-        return JSON.parse(jsonString)
+        return Json.decodeFromString(jsonString)
     }
 
     private fun generateRandomString(length: Int): String {

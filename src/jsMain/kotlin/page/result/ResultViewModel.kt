@@ -1,16 +1,24 @@
 package page.result
 
 import Core.diff
-import Core.generateFullHtml
 import Core.toTable
 import DiffTableRow
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import kotlinx.browser.document
 import kotlinx.browser.window
 import org.w3c.dom.url.URL
 import page.input.InputViewModel
 import repo.PivotRepo
+
+sealed interface ResultUiState {
+    data object Idle : ResultUiState
+    data class Success(
+        val name: String,
+        val diffTable: List<DiffTableRow>
+    ) : ResultUiState
+}
 
 class ResultViewModel(
     val pivotRepo: PivotRepo
@@ -19,7 +27,7 @@ class ResultViewModel(
     var errorMsg by mutableStateOf("")
         private set
 
-    var diffTable by mutableStateOf(emptyList<DiffTableRow>())
+    var uiState by mutableStateOf<ResultUiState>(ResultUiState.Idle)
         private set
 
     init {
@@ -38,12 +46,22 @@ class ResultViewModel(
             errorMsg = "Invalid ${InputViewModel.KEY_LOCAL_CACHE_KEY} '$localCacheKey'"
             return
         }
+        console.log(pivotData)
 
-        with(pivotData) {
-            val beforeTable = before.toTable()
-            val afterTable = after.toTable()
-            diffTable = diff(beforeTable, afterTable)
+        // Update window title first
+        document.title = "Diffetto - ${pivotData.resultName}"
+
+        // Then build the result
+        val beforeTable = pivotData.before.toTable()
+        val afterTable = pivotData.after.toTable()
+        val diffTable = diff(beforeTable, afterTable)
+
+        if(diffTable.isEmpty()){
+            errorMsg = "Something went wrong. Diff table looks empty 🤔"
+            return
         }
+
+        uiState = ResultUiState.Success(pivotData.resultName, diffTable)
     }
 
 }

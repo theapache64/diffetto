@@ -1,3 +1,5 @@
+import kotlinx.serialization.Serializable
+
 data class PivotTableRow(
     val name: String,
     val timestamp: String,
@@ -14,8 +16,9 @@ data class DiffTableRow(
     val diffCount: String
 )
 
+@Serializable
 data class PivotData(
-    val name : String,
+    val resultName : String,
     val before : String,
     val after : String
 )
