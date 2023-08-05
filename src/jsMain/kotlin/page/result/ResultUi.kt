@@ -98,8 +98,8 @@ fun ResultPage(
                                     Td { Text(row.name) }
                                     Td { Text(row.beforeTimestamp) }
                                     Td { Text(row.afterTimestamp) }
-                                    Td { Text(row.diffInMs) }
-                                    Td { Text(row.diffCount) }
+                                    Td { Text(row.diff) }
+                                    Td { Text(row.countDiff) }
                                 }
                             }
                         }
