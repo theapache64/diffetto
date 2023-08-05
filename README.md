@@ -1,6 +1,6 @@
 ![](cover.jpeg)
 
-# compose-web-template
+# 🚧 Diffetto
 
 ![buildStatus](https://img.shields.io/github/workflow/status/theapache64/compose-web-template/Java%20CI%20with%20Gradle?style=plastic)
 ![latestVersion](https://img.shields.io/github/v/release/theapache64/compose-web-template)
@@ -8,7 +8,7 @@
 <img alt="Twitter: theapache64" src="https://img.shields.io/twitter/follow/theapache64.svg?style=social" />
 </a>
 
-> A basic compose web project template
+> An extension web app for Perfetto
 
 ## 💻 Demo
 

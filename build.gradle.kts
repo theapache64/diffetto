@@ -1,7 +1,7 @@
 // Add compose gradle plugin
 plugins {
-    kotlin("multiplatform") version "1.5.31"
-    id("org.jetbrains.compose") version "1.0.0-beta1"
+    kotlin("multiplatform") version "1.9.0"
+    id("org.jetbrains.compose") version "1.4.3"
 }
 group = "com.github.theapache64.diffetto"
 version = "1.0.0-alpha01"
