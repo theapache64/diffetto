@@ -81,7 +81,7 @@ fun ResultPage(
                         Thead {
                             Tr {
                                 listOf(
-                                    "Name", "Before", "After", "Diff", "Count diff"
+                                    "Name", "Before", "After", "Diff (in ms)", "Count diff"
                                 ).forEach { columnName ->
                                     key(columnName) {
                                         Th(
@@ -105,10 +105,19 @@ fun ResultPage(
                                 if (row.isVisible) {
                                     key(row.name) {
                                         Tr {
-                                            Td { Text(row.name) }
+                                            Td {
+                                                val emoji = when {
+                                                    row.isLargest -> "🔴 "
+                                                    row.isSmallest -> "🟠 "
+                                                    else -> ""
+                                                }
+                                                Text("$emoji${row.name}")
+                                            }
                                             Td { Text(row.beforeTimestamp) }
                                             Td { Text(row.afterTimestamp) }
-                                            Td { Text(row.diff) }
+                                            Td {
+                                                Text("${row.diff ?: 0}")
+                                            }
                                             Td { Text(row.countDiff) }
                                         }
                                     }

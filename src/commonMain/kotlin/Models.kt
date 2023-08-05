@@ -11,9 +11,11 @@ data class DiffTableRow(
     val name: String,
     val beforeTimestamp: String,
     val afterTimestamp: String,
-    val diff: String,
+    val diff: Int?,
     val countDiff: String,
-    var isVisible: Boolean
+    var isVisible: Boolean,
+    var isLargest: Boolean,
+    var isSmallest: Boolean
 )
 
 @Serializable

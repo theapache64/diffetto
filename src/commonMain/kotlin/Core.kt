@@ -13,11 +13,11 @@ object Core {
 
             val oldRow = beforeTable.find { it.name == name }
             val newRow = afterTable.find { it.name == name }
-            var diffInMs = "-"
+            var diffInMs: Int? = null
 
 
             if (oldRow != null && newRow != null) {
-                diffInMs = "${(newRow.timeInMillis - oldRow.timeInMillis).roundToInt()}"
+                diffInMs = (newRow.timeInMillis - oldRow.timeInMillis).roundToInt()
             }
 
             val oldCount = oldRow?.count ?: -1
@@ -41,12 +41,27 @@ object Core {
                 name = name,
                 beforeTimestamp = oldRow?.timestamp ?: "-",
                 afterTimestamp = newRow?.timestamp ?: "-",
-                diff = diffInMs + "ms",
+                diff = diffInMs,
                 countDiff = diffCount,
-                isVisible = false
+                isVisible = false,
+                isLargest = false,
+                isSmallest = false
             )
 
             diffList.add(diffRow)
+        }
+
+        if (diffList.isNotEmpty()) {
+            // Finding largest
+            diffList
+                .filter { it.diff != null }
+                .maxByOrNull { it.diff ?: error("diff can't be null") }
+                ?.isLargest = true
+
+            diffList
+                .filter { it.diff != null }
+                .minByOrNull { it.diff ?: error("diff can't be null") }
+                ?.isSmallest = true
         }
 
         return diffList
