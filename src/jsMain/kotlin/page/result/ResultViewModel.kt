@@ -11,20 +11,25 @@ import kotlinx.browser.window
 import org.w3c.dom.url.URL
 import page.input.InputViewModel
 import repo.PivotRepo
+import kotlin.js.Date
 
 sealed interface ResultUiState {
     data object Idle : ResultUiState
     data class Success(
         val name: String,
-        val diffTable: List<DiffTableRow>
+        val diffTable: List<DiffTableRow>,
+        val createdAt: Int // Workaround to trigger recomposition
     ) : ResultUiState
 }
 
 class ResultViewModel(
-    val pivotRepo: PivotRepo
+    private val pivotRepo: PivotRepo
 ) {
 
     var errorMsg by mutableStateOf("")
+        private set
+
+    var searchKeyword by mutableStateOf("")
         private set
 
     var uiState by mutableStateOf<ResultUiState>(ResultUiState.Idle)
@@ -52,16 +57,50 @@ class ResultViewModel(
         document.title = "Diffetto - ${pivotData.resultName}"
 
         // Then build the result
-        val beforeTable = pivotData.before.toTable()
-        val afterTable = pivotData.after.toTable()
-        val diffTable = diff(beforeTable, afterTable)
+        val beforeTable = pivotData.before.toTable().find {
+            it.name.contains("CompositionLocal.kt:225")
+        }!!.let {
+            listOf(it)
+        }
+        val afterTable = pivotData.after.toTable().find {
+            it.name.contains("CompositionLocal.kt:225")
+        }!!.let {
+            listOf(it)
+        }
+        val diffTable = diff(beforeTable, afterTable).applySearch(searchKeyword)
 
-        if(diffTable.isEmpty()){
+        if (diffTable.isEmpty()) {
             errorMsg = "Something went wrong. Diff table looks empty 🤔"
             return
         }
 
-        uiState = ResultUiState.Success(pivotData.resultName, diffTable)
+        updateState(ResultUiState.Success(pivotData.resultName, diffTable, -1))
     }
 
+    fun onSearchKeywordChanged(value: String) {
+        console.log("Search: '$value'")
+        this.searchKeyword = value.trim()
+        val successState = uiState as? ResultUiState.Success ?: return
+        val newState = successState.copy(diffTable = successState.diffTable.applySearch(searchKeyword))
+        updateState(newState)
+    }
+
+    private fun updateState(newState: ResultUiState.Success) {
+        uiState = newState.copy(createdAt = Date().getMilliseconds())
+    }
 }
+
+private fun List<DiffTableRow>.applySearch(keyword: String): List<DiffTableRow> {
+    return if (keyword.isBlank()) {
+        this.onEach { row ->
+            row.isVisible = true
+        }
+    } else {
+        this.onEach { row ->
+            row.isVisible = row.name.contains(keyword, ignoreCase = true).also {
+                console.log("${row.name} -> $it")
+            }
+        }
+    }
+}
+

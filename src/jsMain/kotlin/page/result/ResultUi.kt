@@ -1,6 +1,7 @@
 package page.result
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import common.ErrorUi
 import common.Header
@@ -60,6 +61,10 @@ fun ResultPage(
                     classes("form-control")
                     id("search-input")
                     placeholder("Search...")
+                    value(viewModel.searchKeyword)
+                    onInput { textInput ->
+                        viewModel.onSearchKeywordChanged(textInput.value)
+                    }
                 }
                 Br()
                 Div(
@@ -78,12 +83,14 @@ fun ResultPage(
                                 listOf(
                                     "Name", "Before", "After", "Diff", "Count diff"
                                 ).forEach { columnName ->
-                                    Th(
-                                        attrs = {
-                                            attr("data-sortable", "true")
+                                    key(columnName) {
+                                        Th(
+                                            attrs = {
+                                                attr("data-sortable", "true")
+                                            }
+                                        ) {
+                                            Text(columnName)
                                         }
-                                    ) {
-                                        Text(columnName)
                                     }
                                 }
                             }
@@ -94,12 +101,17 @@ fun ResultPage(
                             }
                         ) {
                             uiState.diffTable.forEach { row ->
-                                Tr {
-                                    Td { Text(row.name) }
-                                    Td { Text(row.beforeTimestamp) }
-                                    Td { Text(row.afterTimestamp) }
-                                    Td { Text(row.diff) }
-                                    Td { Text(row.countDiff) }
+                                console.log("\uD83D\uDCBB ${row.name} -> ${row.isVisible}")
+                                if (row.isVisible) {
+                                    key(row.name) {
+                                        Tr {
+                                            Td { Text(row.name) }
+                                            Td { Text(row.beforeTimestamp) }
+                                            Td { Text(row.afterTimestamp) }
+                                            Td { Text(row.diff) }
+                                            Td { Text(row.countDiff) }
+                                        }
+                                    }
                                 }
                             }
                         }

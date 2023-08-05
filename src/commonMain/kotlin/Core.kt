@@ -1,3 +1,5 @@
+import kotlin.math.roundToInt
+
 object Core {
 
     fun diff(beforeTable: List<PivotTableRow>, afterTable: List<PivotTableRow>): List<DiffTableRow> {
@@ -15,7 +17,7 @@ object Core {
 
 
             if (oldRow != null && newRow != null) {
-                diffInMs = "${newRow.timeInMillis - oldRow.timeInMillis}"
+                diffInMs = "${(newRow.timeInMillis - oldRow.timeInMillis).roundToInt()}"
             }
 
             val oldCount = oldRow?.count ?: -1
@@ -36,11 +38,12 @@ object Core {
             }
 
             val diffRow = DiffTableRow(
-                name,
-                oldRow?.timestamp ?: "-",
-                newRow?.timestamp ?: "-",
-                diffInMs + "ms",
-                diffCount
+                name = name,
+                beforeTimestamp = oldRow?.timestamp ?: "-",
+                afterTimestamp = newRow?.timestamp ?: "-",
+                diff = diffInMs + "ms",
+                countDiff = diffCount,
+                isVisible = false
             )
 
             diffList.add(diffRow)
@@ -69,17 +72,18 @@ object Core {
         return rows
     }
 
-    private fun parseTimestampToMilliseconds(timestamp: String): Long {
-        var milliseconds = 0L
+
+    private fun parseTimestampToMilliseconds(timestamp: String): Float {
+        var milliseconds = 0f
         val parts = timestamp.split(" ")
         for (part in parts) {
             val unit = part.replace("\\d".toRegex(), "")
             val value = part.replace(unit, "").toLong()
             val valueInMs = when (unit) {
-                "s" -> value * 1000L
-                "ms" -> value
-                "us" -> value / 1000L
-                "ns" -> value / 1_000_000L
+                "s" -> value * 1000f // second
+                "ms" -> value.toFloat() // milli
+                "us" -> (value / 1000f)
+                "ns" -> (value / 1_000_000f)
                 else -> error("Unhandled unit '$unit'")
             }
             milliseconds += valueInMs
