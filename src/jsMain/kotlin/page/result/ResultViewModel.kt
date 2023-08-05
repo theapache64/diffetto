@@ -57,16 +57,8 @@ class ResultViewModel(
         document.title = "Diffetto - ${pivotData.resultName}"
 
         // Then build the result
-        val beforeTable = pivotData.before.toTable().find {
-            it.name.contains("CompositionLocal.kt:225")
-        }!!.let {
-            listOf(it)
-        }
-        val afterTable = pivotData.after.toTable().find {
-            it.name.contains("CompositionLocal.kt:225")
-        }!!.let {
-            listOf(it)
-        }
+        val beforeTable = pivotData.before.toTable()
+        val afterTable = pivotData.after.toTable()
         val diffTable = diff(beforeTable, afterTable).applySearch(searchKeyword)
 
         if (diffTable.isEmpty()) {
