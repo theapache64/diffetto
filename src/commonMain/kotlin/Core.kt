@@ -16,8 +16,16 @@ object Core {
             var diffInMs: Int? = null
 
 
-            if (oldRow != null && newRow != null) {
-                diffInMs = (newRow.timeInMillis - oldRow.timeInMillis).roundToInt()
+            when {
+                oldRow != null && newRow != null -> {
+                    diffInMs = (newRow.timeInMillis - oldRow.timeInMillis).roundToInt()
+                }
+                newRow != null -> {
+                    diffInMs = newRow.timeInMillis.roundToInt()
+                }
+                oldRow != null -> {
+                    diffInMs = -oldRow.timeInMillis.roundToInt()
+                }
             }
 
             val oldCount = oldRow?.count ?: -1
