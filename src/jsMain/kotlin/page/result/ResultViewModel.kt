@@ -3,6 +3,7 @@ package page.result
 import Core.diff
 import Core.toTable
 import DiffTableRow
+import PivotTableRow
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -30,6 +31,10 @@ class ResultViewModel(
     var uiState by mutableStateOf<ResultUiState>(ResultUiState.Idle)
         private set
 
+    // TODO: Provide a checkbox
+    var isFocusModeEnabled by mutableStateOf(true)
+        private set
+
     init {
         init()
     }
@@ -52,8 +57,8 @@ class ResultViewModel(
         document.title = "Diffetto - ${pivotData.resultName}"
 
         // Then build the result
-        val beforeTable = pivotData.before.toTable()
-        val afterTable = pivotData.after.toTable()
+        val beforeTable = pivotData.before.toTable().filterForFocusMode()
+        val afterTable = pivotData.after.toTable().filterForFocusMode()
         val diffTable = diff(beforeTable, afterTable)
 
         if (diffTable.isEmpty()) {
@@ -62,6 +67,30 @@ class ResultViewModel(
         }
 
         updateState(ResultUiState.Success(pivotData.resultName, diffTable, -1))
+    }
+
+
+    private fun List<PivotTableRow>.filterForFocusMode(): List<PivotTableRow> {
+        if (!isFocusModeEnabled) return this
+        return this.filterNot {
+            it.name.startsWith("androidx.compose.") ||
+                    it.name.startsWith("Choreographer#") ||
+                    it.name.startsWith("HWUI:") ||
+                    it.name.startsWith("Compose:") ||
+                    it.name.startsWith("Recomposer:") ||
+                    it.name.startsWith("AndroidOwner:") ||
+                    it.name == "draw" ||
+                    it.name == "animation" ||
+                    it.name == "layout" ||
+                    it.name == "traversal" ||
+                    it.name == "measure" ||
+                    it.name == "Record View#draw()"
+        }
+    }
+
+    fun onFocusModeChanged(newFocusMode: Boolean) {
+        isFocusModeEnabled = newFocusMode
+        init()
     }
 
 

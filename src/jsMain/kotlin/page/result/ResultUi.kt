@@ -8,6 +8,7 @@ import common.Header
 import org.jetbrains.compose.web.attributes.InputType
 import org.jetbrains.compose.web.attributes.placeholder
 import org.jetbrains.compose.web.dom.Br
+import org.jetbrains.compose.web.dom.CheckboxInput
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.H2
 import org.jetbrains.compose.web.dom.Input
@@ -46,61 +47,63 @@ fun ResultPage(
         when (val uiState = viewModel.uiState) {
             ResultUiState.Idle -> {
                 // nothing
+                Text("Loading...")
             }
 
             is ResultUiState.Success -> {
                 H2 {
                     Text(uiState.name)
                 }
-                P {
-                    Text("Type something in the input field to search the table :")
-                }
-                Div(
-                    attrs = {
-                        classes("table-responsive")
-                    }
-                ) {
-                    Table(
+
+                key(uiState.createdAt.toString()){
+                    Div(
                         attrs = {
-                            classes("table", "table-bordered")
-                            attr("data-toggle", "table")
-                            attr("data-search", "true")
+                            classes("table-responsive")
                         }
                     ) {
-                        Thead {
-                            Tr {
-                                listOf(
-                                    "Name", "Before (ms)", "After (ms)", "Diff (ms)", "Count diff"
-                                ).forEach { columnName ->
-                                    key(columnName) {
-                                        Th(
-                                            attrs = {
-                                                attr("data-sortable", "true")
+                        Table(
+                            attrs = {
+                                id("result-table")
+                                classes("table", "table-bordered")
+                                attr("data-toggle", "table")
+                                attr("data-search", "true")
+                            }
+                        ) {
+                            Thead {
+                                Tr {
+                                    listOf(
+                                        "Name", "Before (ms)", "After (ms)", "Diff (ms)", "Count diff"
+                                    ).forEach { columnName ->
+                                        key(columnName) {
+                                            Th(
+                                                attrs = {
+                                                    attr("data-sortable", "true")
+                                                }
+                                            ) {
+                                                Text(columnName)
                                             }
-                                        ) {
-                                            Text(columnName)
                                         }
                                     }
                                 }
                             }
-                        }
-                        Tbody(
-                            attrs = {
-                                id("tbResult")
-                            }
-                        ) {
-                            uiState.diffTable.forEach { row ->
-                                key(row.name) {
-                                    Tr {
-                                        Td {
-                                            Text(row.name)
+                            Tbody(
+                                attrs = {
+                                    id("tbResult")
+                                }
+                            ) {
+                                uiState.diffTable.forEach { row ->
+                                    key(row.name) {
+                                        Tr {
+                                            Td {
+                                                Text(row.name)
+                                            }
+                                            Td { Text(row.beforeTimeInMs) }
+                                            Td { Text(row.afterTimeInMs) }
+                                            Td {
+                                                Text("${row.diff ?: 0}")
+                                            }
+                                            Td { Text(row.countDiff) }
                                         }
-                                        Td { Text(row.beforeTimeInMs) }
-                                        Td { Text(row.afterTimeInMs) }
-                                        Td {
-                                            Text("${row.diff ?: 0}")
-                                        }
-                                        Td { Text(row.countDiff) }
                                     }
                                 }
                             }
