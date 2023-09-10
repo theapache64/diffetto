@@ -93,12 +93,7 @@ fun ResultPage(
                                 key(row.name) {
                                     Tr {
                                         Td {
-                                            val emoji = when {
-                                                row.isLargest -> "🔴 "
-                                                row.isSmallest -> "🟠 "
-                                                else -> ""
-                                            }
-                                            Text("$emoji${row.name}")
+                                            Text(row.name)
                                         }
                                         Td { Text(row.beforeTimeInMs) }
                                         Td { Text(row.afterTimeInMs) }
