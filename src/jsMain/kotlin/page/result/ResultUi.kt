@@ -70,7 +70,7 @@ fun ResultPage(
                         Thead {
                             Tr {
                                 listOf(
-                                    "Name", "Before", "After", "Diff (in ms)", "Count diff"
+                                    "Name", "Before (ms)", "After (ms)", "Diff (ms)", "Count diff"
                                 ).forEach { columnName ->
                                     key(columnName) {
                                         Th(
@@ -100,8 +100,8 @@ fun ResultPage(
                                             }
                                             Text("$emoji${row.name}")
                                         }
-                                        Td { Text(row.beforeTimestamp) }
-                                        Td { Text(row.afterTimestamp) }
+                                        Td { Text(row.beforeTimeInMs) }
+                                        Td { Text(row.afterTimeInMs) }
                                         Td {
                                             Text("${row.diff ?: 0}")
                                         }

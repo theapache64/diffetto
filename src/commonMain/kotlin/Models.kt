@@ -9,6 +9,8 @@ data class PivotTableRow(
 
 data class DiffTableRow(
     val name: String,
+    val beforeTimeInMs : String,
+    val afterTimeInMs : String,
     val beforeTimestamp: String,
     val afterTimestamp: String,
     val diff: Int?,

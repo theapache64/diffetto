@@ -20,9 +20,11 @@ object Core {
                 oldRow != null && newRow != null -> {
                     diffInMs = (newRow.timeInMillis - oldRow.timeInMillis).roundToInt()
                 }
+
                 newRow != null -> {
                     diffInMs = newRow.timeInMillis.roundToInt()
                 }
+
                 oldRow != null -> {
                     diffInMs = -oldRow.timeInMillis.roundToInt()
                 }
@@ -45,8 +47,18 @@ object Core {
                 }
             }
 
+            val beforeTimeInMs = oldRow?.timeInMillis?.roundToInt()?.let {
+                "${it}"
+            } ?: "-"
+
+            val afterTimeInMs = newRow?.timeInMillis?.roundToInt()?.let {
+                "${it}"
+            } ?: "-"
+
             val diffRow = DiffTableRow(
                 name = name,
+                beforeTimeInMs = beforeTimeInMs,
+                afterTimeInMs = afterTimeInMs,
                 beforeTimestamp = oldRow?.timestamp ?: "-",
                 afterTimestamp = newRow?.timestamp ?: "-",
                 diff = diffInMs,
