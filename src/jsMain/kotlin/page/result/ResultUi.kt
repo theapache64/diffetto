@@ -6,13 +6,10 @@ import androidx.compose.runtime.remember
 import common.ErrorUi
 import common.Header
 import org.jetbrains.compose.web.attributes.InputType
-import org.jetbrains.compose.web.attributes.placeholder
-import org.jetbrains.compose.web.dom.Br
-import org.jetbrains.compose.web.dom.CheckboxInput
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.H2
 import org.jetbrains.compose.web.dom.Input
-import org.jetbrains.compose.web.dom.P
+import org.jetbrains.compose.web.dom.Label
 import org.jetbrains.compose.web.dom.Table
 import org.jetbrains.compose.web.dom.Tbody
 import org.jetbrains.compose.web.dom.Td
@@ -21,12 +18,14 @@ import org.jetbrains.compose.web.dom.Th
 import org.jetbrains.compose.web.dom.Thead
 import org.jetbrains.compose.web.dom.Tr
 import repo.PivotRepoImpl
+import repo.PrefRepoImpl
 
 @Composable
 fun ResultPage(
     viewModel: ResultViewModel = remember {
         ResultViewModel(
-            PivotRepoImpl()
+            PivotRepoImpl(),
+            PrefRepoImpl()
         )
     }
 ) {
@@ -53,6 +52,44 @@ fun ResultPage(
             is ResultUiState.Success -> {
                 H2 {
                     Text(uiState.name)
+                }
+
+                /**
+                 * <div class="form-check">
+                 *   <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                 *   <label class="form-check-label" for="flexCheckDefault">
+                 *     Default checkbox
+                 *   </label>
+                 * </div>
+                 */
+
+                Div(
+                    attrs = {
+                        classes("d-flex","justify-content-end")
+                    }
+                ) {
+                    Div(
+                        attrs = {
+                            classes("form-check")
+                        }
+                    ) {
+                        Input(
+                            type = InputType.Checkbox,
+                            attrs = {
+                                id("cbHideFrameworkCalls")
+                                classes("form-check-input")
+                                checked(viewModel.isHideFrameworkCallsEnabled)
+                                onInput {
+                                    viewModel.onHideFrameworkCallsEnabled(it.value)
+                                }
+                            }
+                        )
+                        Label(
+                            forId = "cbHideFrameworkCalls"
+                        ){
+                            Text("Hide framework calls")
+                        }
+                    }
                 }
 
                 key(uiState.createdAt.toString()){

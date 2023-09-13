@@ -12,6 +12,7 @@ import kotlinx.browser.window
 import org.w3c.dom.url.URL
 import page.input.InputViewModel
 import repo.PivotRepo
+import repo.PrefRepo
 import kotlin.js.Date
 
 sealed interface ResultUiState {
@@ -21,11 +22,21 @@ sealed interface ResultUiState {
     ) : ResultUiState
 }
 
+external interface BootstrapTable {
+    fun bootstrapTable()
+    // etc
+}
+
+
 class ResultViewModel(
-    private val pivotRepo: PivotRepo
+    private val pivotRepo: PivotRepo,
+    private val prefRepo: PrefRepo,
 ) {
 
     companion object{
+
+        private const val KEY_IS_HIDE_FRAMEWORK_CALLS = "is_hide_framework_calls_enabled"
+
         val systemCallsRegex = listOf(
             "androidx.compose.",
             "Choreographer#",
@@ -48,8 +59,7 @@ class ResultViewModel(
     var uiState by mutableStateOf<ResultUiState>(ResultUiState.Idle)
         private set
 
-    // TODO: Provide a checkbox
-    var isHideSystemCalls by mutableStateOf(true)
+    var isHideFrameworkCallsEnabled by mutableStateOf(prefRepo.get(KEY_IS_HIDE_FRAMEWORK_CALLS)?.toBoolean() ?: true)
         private set
 
     init {
@@ -87,15 +97,16 @@ class ResultViewModel(
     }
 
     private fun List<PivotTableRow>.checkSystemCallsFilter(): List<PivotTableRow> {
-        if (!isHideSystemCalls) return this
+        if (!isHideFrameworkCallsEnabled) return this
         return this.filterNot { row ->
             systemCallsRegex.matches(row.name)
         }
     }
 
-    fun onFocusModeChanged(newFocusMode: Boolean) {
-        isHideSystemCalls = newFocusMode
-        init()
+    fun onHideFrameworkCallsEnabled(newFocusMode: Boolean) {
+        isHideFrameworkCallsEnabled = newFocusMode
+        prefRepo.set(KEY_IS_HIDE_FRAMEWORK_CALLS, newFocusMode.toString())
+        window.location.reload()
     }
 
 
