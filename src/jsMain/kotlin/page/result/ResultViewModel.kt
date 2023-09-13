@@ -26,7 +26,20 @@ class ResultViewModel(
 ) {
 
     companion object{
-        val systemCallsRegex = "^(androidx.compose.|Choreographer#|HWUI:|Compose:|Recomposer:|AndroidOwner:|draw|animation|layout|traversal|measure|Record View#draw\\(\\)).*".toRegex()
+        val systemCallsRegex = listOf(
+            "androidx.compose.",
+            "Choreographer#",
+            "HWUI:",
+            "Compose:",
+            "Recomposer:",
+            "AndroidOwner:",
+            "draw",
+            "animation",
+            "layout",
+            "traversal",
+            "measure",
+            "Record View#draw\\(\\)"
+        ).joinToString(separator = "|", prefix = "^(", postfix = ").*").toRegex()
     }
 
     var errorMsg by mutableStateOf("")
