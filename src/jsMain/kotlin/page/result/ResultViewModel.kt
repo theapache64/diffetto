@@ -25,6 +25,10 @@ class ResultViewModel(
     private val pivotRepo: PivotRepo
 ) {
 
+    companion object{
+        val systemCallsRegex = "^(androidx.compose.|Choreographer#|HWUI:|Compose:|Recomposer:|AndroidOwner:|draw|animation|layout|traversal|measure|Record View#draw\\(\\)).*".toRegex()
+    }
+
     var errorMsg by mutableStateOf("")
         private set
 
@@ -32,7 +36,7 @@ class ResultViewModel(
         private set
 
     // TODO: Provide a checkbox
-    var isFocusModeEnabled by mutableStateOf(true)
+    var isHideSystemCalls by mutableStateOf(true)
         private set
 
     init {
@@ -57,8 +61,8 @@ class ResultViewModel(
         document.title = "Diffetto - ${pivotData.resultName}"
 
         // Then build the result
-        val beforeTable = pivotData.before.toTable().filterForFocusMode()
-        val afterTable = pivotData.after.toTable().filterForFocusMode()
+        val beforeTable = pivotData.before.toTable().checkSystemCallsFilter()
+        val afterTable = pivotData.after.toTable().checkSystemCallsFilter()
         val diffTable = diff(beforeTable, afterTable)
 
         if (diffTable.isEmpty()) {
@@ -69,27 +73,15 @@ class ResultViewModel(
         updateState(ResultUiState.Success(pivotData.resultName, diffTable, -1))
     }
 
-
-    private fun List<PivotTableRow>.filterForFocusMode(): List<PivotTableRow> {
-        if (!isFocusModeEnabled) return this
-        return this.filterNot {
-            it.name.startsWith("androidx.compose.") ||
-                    it.name.startsWith("Choreographer#") ||
-                    it.name.startsWith("HWUI:") ||
-                    it.name.startsWith("Compose:") ||
-                    it.name.startsWith("Recomposer:") ||
-                    it.name.startsWith("AndroidOwner:") ||
-                    it.name == "draw" ||
-                    it.name == "animation" ||
-                    it.name == "layout" ||
-                    it.name == "traversal" ||
-                    it.name == "measure" ||
-                    it.name == "Record View#draw()"
+    private fun List<PivotTableRow>.checkSystemCallsFilter(): List<PivotTableRow> {
+        if (!isHideSystemCalls) return this
+        return this.filterNot { row ->
+            systemCallsRegex.matches(row.name)
         }
     }
 
     fun onFocusModeChanged(newFocusMode: Boolean) {
-        isFocusModeEnabled = newFocusMode
+        isHideSystemCalls = newFocusMode
         init()
     }
 
