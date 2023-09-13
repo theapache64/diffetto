@@ -1,7 +1,7 @@
 import kotlinx.serialization.Serializable
 
 data class PivotTableRow(
-    val name: String,
+    var name: String,
     val timestamp: String,
     val timeInMillis: Float,
     val count: Int

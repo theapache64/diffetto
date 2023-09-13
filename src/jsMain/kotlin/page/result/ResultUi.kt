@@ -90,6 +90,29 @@ fun ResultPage(
                             Text("Hide framework calls")
                         }
                     }
+
+                    Div(
+                        attrs = {
+                            classes("form-check", "ms-2")
+                        }
+                    ) {
+                        Input(
+                            type = InputType.Checkbox,
+                            attrs = {
+                                id("cbIgnoreLineNo")
+                                classes("form-check-input")
+                                checked(viewModel.isIgnoreLineNoEnabled)
+                                onInput {
+                                    viewModel.onIgnoreLineNoChanged(it.value)
+                                }
+                            }
+                        )
+                        Label(
+                            forId = "cbIgnoreLineNo"
+                        ){
+                            Text("Ignore line number")
+                        }
+                    }
                 }
 
                 key(uiState.createdAt.toString()){

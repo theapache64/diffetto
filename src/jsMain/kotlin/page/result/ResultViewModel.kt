@@ -33,9 +33,10 @@ class ResultViewModel(
     private val prefRepo: PrefRepo,
 ) {
 
-    companion object{
+    companion object {
 
         private const val KEY_IS_HIDE_FRAMEWORK_CALLS = "is_hide_framework_calls_enabled"
+        private const val KEY_IS_IGNORE_LINE_NO = "is_ignore_line_number"
 
         val systemCallsRegex = listOf(
             "androidx.compose.",
@@ -51,6 +52,8 @@ class ResultViewModel(
             "measure",
             "Record View#draw\\(\\)"
         ).joinToString(separator = "|", prefix = "^(", postfix = ").*").toRegex()
+
+        val lineNoRegEx = "^(?<title>.+) (?<lineNo>\\(.+:\\d+\\))\$".toRegex()
     }
 
     var errorMsg by mutableStateOf("")
@@ -60,6 +63,9 @@ class ResultViewModel(
         private set
 
     var isHideFrameworkCallsEnabled by mutableStateOf(prefRepo.get(KEY_IS_HIDE_FRAMEWORK_CALLS)?.toBoolean() ?: true)
+        private set
+
+    var isIgnoreLineNoEnabled by mutableStateOf(prefRepo.get(KEY_IS_IGNORE_LINE_NO)?.toBoolean() ?: false)
         private set
 
     init {
@@ -84,8 +90,8 @@ class ResultViewModel(
         document.title = "Diffetto - ${pivotData.resultName}"
 
         // Then build the result
-        val beforeTable = pivotData.before.toTable().checkSystemCallsFilter()
-        val afterTable = pivotData.after.toTable().checkSystemCallsFilter()
+        val beforeTable = pivotData.before.toTable().checkSystemCallsFilter().checkLineNoFilter()
+        val afterTable = pivotData.after.toTable().checkSystemCallsFilter().checkLineNoFilter()
         val diffTable = diff(beforeTable, afterTable)
 
         if (diffTable.isEmpty()) {
@@ -103,6 +109,25 @@ class ResultViewModel(
         }
     }
 
+    private fun List<PivotTableRow>.checkLineNoFilter(): List<PivotTableRow> {
+        println("line filter")
+        if (!isIgnoreLineNoEnabled) return this
+        this.forEach { row ->
+            row.name = removeLineNoFromRowName(row.name)
+        }
+        return this
+    }
+
+
+    private fun removeLineNoFromRowName(name: String): String {
+        val result = lineNoRegEx.find(name)
+        if (result != null) {
+            println("matched -> ${result.groupValues}")
+            return result.groupValues.getOrNull(1) ?: name
+        }
+        return name
+    }
+
     fun onHideFrameworkCallsEnabled(newFocusMode: Boolean) {
         isHideFrameworkCallsEnabled = newFocusMode
         prefRepo.set(KEY_IS_HIDE_FRAMEWORK_CALLS, newFocusMode.toString())
@@ -112,6 +137,12 @@ class ResultViewModel(
 
     private fun updateState(newState: ResultUiState.Success) {
         uiState = newState.copy(createdAt = Date().getMilliseconds())
+    }
+
+    fun onIgnoreLineNoChanged(newValue: Boolean) {
+        isIgnoreLineNoEnabled = newValue
+        prefRepo.set(KEY_IS_IGNORE_LINE_NO, newValue.toString())
+        window.location.reload()
     }
 }
 
