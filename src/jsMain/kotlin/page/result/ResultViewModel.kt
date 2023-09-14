@@ -40,6 +40,13 @@ class ResultViewModel(
 
         val systemCallsRegex = listOf(
             "androidx.compose.",
+            "android.",
+            "com.android.internal.",
+            "java.",
+            "kotlinx.",
+            "kotlin.",
+            "sun.",
+            "dalvik.",
             "Choreographer#",
             "HWUI:",
             "Compose:",
@@ -121,10 +128,16 @@ class ResultViewModel(
 
     private fun removeLineNoFromRowName(name: String): String {
         val result = lineNoRegEx.find(name)
+        var newName = name
         if (result != null) {
-            return result.groupValues.getOrNull(1) ?: name
+            newName = result.groupValues.getOrNull(1) ?: name
         }
-        return name
+
+        if(newName.contains("$1")){
+            newName = newName.substring(0, newName.indexOf("\$1"))
+        }
+
+        return newName
     }
 
     fun onHideFrameworkCallsEnabled(newFocusMode: Boolean) {

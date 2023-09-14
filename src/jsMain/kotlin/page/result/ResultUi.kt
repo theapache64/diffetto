@@ -120,6 +120,9 @@ fun ResultPage(
                                 attr("data-search", "true")
                                 attr("data-sort-name","Diff (ms)")
                                 attr("data-sort-order","desc")
+                                attr("data-pagination","true")
+                                attr("data-page-size","300")
+                                attr("data-pagination-v-align","both")
                             }
                         ) {
                             Thead {
