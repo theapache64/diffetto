@@ -9,7 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import kotlinx.browser.document
-import kotlinx.browser.window
 import repo.PrefRepo
 import kotlin.js.Date
 
@@ -67,7 +66,7 @@ class ResultViewModel(
     var uiState by mutableStateOf<ResultUiState>(ResultUiState.Idle)
         private set
 
-    var isHideFrameworkCallsEnabled by mutableStateOf(prefRepo.get(KEY_IS_HIDE_FRAMEWORK_CALLS)?.toBoolean() ?: true)
+    var isHideFrameworkCallsEnabled by mutableStateOf(/*prefRepo.get(KEY_IS_HIDE_FRAMEWORK_CALLS)?.toBoolean() ?:*/ true)
         private set
 
     var isIgnoreLineNoEnabled by mutableStateOf(prefRepo.get(KEY_IS_IGNORE_LINE_NO)?.toBoolean() ?: false)
@@ -142,7 +141,7 @@ class ResultViewModel(
         renderTable()
     }
 
-    fun onTableReady() {
+    fun onTableStructureReady() {
         println("enable bootstrap table powers!")
         js("\$('table').bootstrapTable()")
     }

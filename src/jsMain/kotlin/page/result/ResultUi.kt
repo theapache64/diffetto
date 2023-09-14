@@ -146,9 +146,7 @@ fun ResultUi(
                                 id("tbResult")
                             }
                         ) {
-                            SideEffect {
-                                viewModel.onTableReady()
-                            }
+
                             uiState.diffTable.forEach { row ->
                                 key(row.name) {
                                     Tr {
@@ -163,6 +161,10 @@ fun ResultUi(
                                         Td { Text(row.countDiff) }
                                     }
                                 }
+                            }
+
+                            SideEffect {
+                                viewModel.onTableStructureReady()
                             }
                         }
                     }
