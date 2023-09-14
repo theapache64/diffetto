@@ -123,6 +123,8 @@ fun ResultPage(
                                 attr("data-pagination","true")
                                 attr("data-page-size","300")
                                 attr("data-pagination-v-align","both")
+                                attr("data-search-highlight","true")
+
                             }
                         ) {
                             Thead {
