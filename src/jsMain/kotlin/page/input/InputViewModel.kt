@@ -8,16 +8,13 @@ import androidx.compose.runtime.setValue
 import kotlinx.browser.window
 import org.w3c.dom.url.URL
 import repo.CacheRepo
-import repo.PivotRepo
 import kotlin.js.Date
 
 class InputViewModel(
-    val pivotRepo: PivotRepo,
     val cacheRepo: CacheRepo
 ) {
 
     companion object {
-        const val KEY_LOCAL_CACHE_KEY = "local_cache_key"
         private const val KEY_BEFORE_CACHE = "before_cache"
         private const val KEY_AFTER_CACHE = "after_cache"
     }
@@ -35,6 +32,9 @@ class InputViewModel(
     )
         private set
 
+
+    var isReadyToShowPivotData by mutableStateOf<Boolean>(false)
+        private set
 
     fun onBeforeInputChanged(newInput: String) {
         pivotData = pivotData.copy(before = newInput)
@@ -59,11 +59,7 @@ class InputViewModel(
             name = Date().toString()
         }
         pivotData = pivotData.copy(resultName = name)
-        val localCacheKey = pivotRepo.savePivotData(pivotData)
-        val newUrl = URL(window.location.href)
-        newUrl.searchParams.set(KEY_LOCAL_CACHE_KEY, localCacheKey)
-
-        window.open(newUrl.href, "_blank")
+        isReadyToShowPivotData = true
     }
 
 

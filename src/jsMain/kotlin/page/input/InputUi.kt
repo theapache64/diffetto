@@ -1,6 +1,5 @@
 package page.input
 
-import PivotData
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import common.ErrorUi
@@ -23,20 +22,20 @@ import org.jetbrains.compose.web.dom.Form
 import org.jetbrains.compose.web.dom.Label
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.dom.TextArea
+import page.result.ResultPage
 import repo.CacheRepoImpl
-import repo.PivotRepoImpl
 
 private const val PLACEHOLDER_PIVOT_INPUT = "Paste your perfetto pivot table data here"
 
 @Composable
 fun InputPage(
-    viewModel: InputViewModel = remember {
+    inputViewModel: InputViewModel = remember {
         InputViewModel(
-            PivotRepoImpl(),
             CacheRepoImpl()
         )
-    }
-) {
+    },
+
+    ) {
     Div(
         attrs = {
             classes("container-fluid")
@@ -48,71 +47,85 @@ fun InputPage(
         Header()
 
         // Error
-        if (viewModel.errorMsg.isNotBlank()) {
-            ErrorUi(viewModel.errorMsg)
+        if (inputViewModel.errorMsg.isNotBlank()) {
+            ErrorUi(inputViewModel.errorMsg)
         }
 
-        // Main
-        Form(
-            attrs = {
-                style {
-                    paddingLeft(40.px)
-                    paddingRight(40.px)
-                    paddingBottom(40.px)
-                }
-            }
-        ) {
-            Div(attrs = {
-                classes("row")
-            }) {
-                Div(attrs = {
-                    classes("col-lg-6")
-                }) {
-                    PivotDataInputUi(
-                        label = "Before",
-                        placeholder = PLACEHOLDER_PIVOT_INPUT,
-                        data = viewModel.pivotData.before,
-                        onInputChanged = { newInput ->
-                            viewModel.onBeforeInputChanged(newInput)
-                        }
-                    )
-                }
+        if (inputViewModel.isReadyToShowPivotData) {
+            ResultPage(
+                inputViewModel.pivotData
+            )
+        } else {
+            InputForm(inputViewModel)
+        }
 
-                Div(attrs = {
-                    classes("col-lg-6")
-                }) {
-                    PivotDataInputUi(
-                        label = "After",
-                        placeholder = PLACEHOLDER_PIVOT_INPUT,
-                        data = viewModel.pivotData.after,
-                        onInputChanged = { newInput ->
-                            viewModel.onAfterInputChanged(newInput)
-                        }
-                    )
-                }
-            }
+    }
+}
 
+@Composable
+private fun InputForm(
+    viewModel: InputViewModel
+) {
+    // Main
+    Form(
+        attrs = {
+            style {
+                paddingLeft(40.px)
+                paddingRight(40.px)
+                paddingBottom(40.px)
+            }
+        }
+    ) {
+        Div(attrs = {
+            classes("row")
+        }) {
             Div(attrs = {
-                classes("row")
+                classes("col-lg-6")
             }) {
-                Div(attrs = {
-                    classes("col-lg-12")
-                }) {
-                    Button(
-                        attrs = {
-                            classes("btn", "btn-outline-primary")
-                            style {
-                                marginTop(10.px)
-                                width(100.percent)
-                            }
-                            onClick {
-                                viewModel.onButtonClicked()
-                            }
-                            type(ButtonType.Button)
-                        }
-                    ) {
-                        Text("🧪 Find Diff")
+                PivotDataInputUi(
+                    label = "Before",
+                    placeholder = PLACEHOLDER_PIVOT_INPUT,
+                    data = viewModel.pivotData.before,
+                    onInputChanged = { newInput ->
+                        viewModel.onBeforeInputChanged(newInput)
                     }
+                )
+            }
+
+            Div(attrs = {
+                classes("col-lg-6")
+            }) {
+                PivotDataInputUi(
+                    label = "After",
+                    placeholder = PLACEHOLDER_PIVOT_INPUT,
+                    data = viewModel.pivotData.after,
+                    onInputChanged = { newInput ->
+                        viewModel.onAfterInputChanged(newInput)
+                    }
+                )
+            }
+        }
+
+        Div(attrs = {
+            classes("row")
+        }) {
+            Div(attrs = {
+                classes("col-lg-12")
+            }) {
+                Button(
+                    attrs = {
+                        classes("btn", "btn-outline-primary")
+                        style {
+                            marginTop(10.px)
+                            width(100.percent)
+                        }
+                        onClick {
+                            viewModel.onButtonClicked()
+                        }
+                        type(ButtonType.Button)
+                    }
+                ) {
+                    Text("🧪 Find Diff")
                 }
             }
         }

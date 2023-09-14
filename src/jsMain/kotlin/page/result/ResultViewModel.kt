@@ -3,15 +3,13 @@ package page.result
 import Core.diff
 import Core.toTable
 import DiffTableRow
+import PivotData
 import PivotTableRow
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import kotlinx.browser.document
 import kotlinx.browser.window
-import org.w3c.dom.url.URL
-import page.input.InputViewModel
-import repo.PivotRepo
 import repo.PrefRepo
 import kotlin.js.Date
 
@@ -29,7 +27,6 @@ external interface BootstrapTable {
 
 
 class ResultViewModel(
-    private val pivotRepo: PivotRepo,
     private val prefRepo: PrefRepo,
 ) {
 
@@ -63,6 +60,7 @@ class ResultViewModel(
         val lineNoRegEx = "^(?<title>.+) (?<lineNo>\\(.+:\\d+\\))\$".toRegex()
     }
 
+    private lateinit var pivotData: PivotData
     var errorMsg by mutableStateOf("")
         private set
 
@@ -75,24 +73,12 @@ class ResultViewModel(
     var isIgnoreLineNoEnabled by mutableStateOf(prefRepo.get(KEY_IS_IGNORE_LINE_NO)?.toBoolean() ?: false)
         private set
 
-    init {
-        init()
+    fun init(pivotData : PivotData) {
+        this.pivotData = pivotData
+        renderTable()
     }
 
-    private fun init() {
-        val localCacheKey = URL(window.location.href).searchParams.get(InputViewModel.KEY_LOCAL_CACHE_KEY)
-        if (localCacheKey == null) {
-            errorMsg = "${InputViewModel.KEY_LOCAL_CACHE_KEY} missing from URL"
-            return
-        }
-
-        val pivotData = pivotRepo.getPivotData(localCacheKey)
-        if (pivotData == null) {
-            errorMsg = "Invalid ${InputViewModel.KEY_LOCAL_CACHE_KEY} '$localCacheKey'"
-            return
-        }
-        console.log(pivotData)
-
+    private fun renderTable() {
         // Update window title first
         document.title = "Diffetto - ${pivotData.resultName}"
 
@@ -117,7 +103,6 @@ class ResultViewModel(
     }
 
     private fun List<PivotTableRow>.checkLineNoFilter(): List<PivotTableRow> {
-        println("line filter")
         if (!isIgnoreLineNoEnabled) return this
         this.forEach { row ->
             row.name = removeLineNoFromRowName(row.name)
@@ -143,7 +128,7 @@ class ResultViewModel(
     fun onHideFrameworkCallsEnabled(newFocusMode: Boolean) {
         isHideFrameworkCallsEnabled = newFocusMode
         prefRepo.set(KEY_IS_HIDE_FRAMEWORK_CALLS, newFocusMode.toString())
-        window.location.reload()
+        renderTable()
     }
 
 
@@ -154,7 +139,12 @@ class ResultViewModel(
     fun onIgnoreLineNoChanged(newValue: Boolean) {
         isIgnoreLineNoEnabled = newValue
         prefRepo.set(KEY_IS_IGNORE_LINE_NO, newValue.toString())
-        window.location.reload()
+        renderTable()
+    }
+
+    fun onTableReady() {
+        println("enable bootstrap table powers!")
+        js("\$('table').bootstrapTable()")
     }
 }
 
