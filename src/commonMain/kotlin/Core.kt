@@ -11,27 +11,35 @@ object Core {
 
         for (name in names) {
 
-            val oldRow = beforeTable.find { it.name == name }
-            val newRow = afterTable.find { it.name == name }
-            var diffInMs: Int? = null
+            val oldRows = beforeTable.filter { it.name == name }
+            val newRows = afterTable.filter { it.name == name }
+            var diffInMs: Long? = null
 
 
             when {
-                oldRow != null && newRow != null -> {
-                    diffInMs = (newRow.timeInMillis - oldRow.timeInMillis).roundToInt()
+                oldRows.isNotEmpty() && newRows.isNotEmpty() -> {
+                    diffInMs = (newRows.sumOf { it.timeInMillis.toLong() } - oldRows.sumOf { it.timeInMillis.toLong() })
                 }
 
-                newRow != null -> {
-                    diffInMs = newRow.timeInMillis.roundToInt()
+                newRows.isNotEmpty() -> {
+                    diffInMs = newRows.sumOf { it.timeInMillis.toLong() }
                 }
 
-                oldRow != null -> {
-                    diffInMs = -oldRow.timeInMillis.roundToInt()
+                oldRows.isNotEmpty() -> {
+                    diffInMs = -oldRows.sumOf { it.timeInMillis.toLong() }
                 }
             }
 
-            val oldCount = oldRow?.count ?: -1
-            val newCount = newRow?.count ?: -1
+            val oldCount = if(oldRows.isEmpty()){
+                -1
+            }else{
+                oldRows.sumOf { it.count }
+            }
+            val newCount = if(newRows.isEmpty()){
+                -1
+            }else{
+                newRows.sumOf { it.count }
+            }
 
             val diffCount = when {
                 oldCount == newCount -> "0"
@@ -47,20 +55,26 @@ object Core {
                 }
             }
 
-            val beforeTimeInMs = oldRow?.timeInMillis?.roundToInt()?.let {
-                "${it}"
-            } ?: "-"
+            val beforeTimeInMs = if(oldRows.isEmpty()) {
+                "-"
+            } else {
+                oldRows.sumOf { it.timeInMillis.toLong() }.let {
+                    "$it"
+                }
+            }
 
-            val afterTimeInMs = newRow?.timeInMillis?.roundToInt()?.let {
-                "${it}"
-            } ?: "-"
+            val afterTimeInMs = if(newRows.isEmpty()) {
+                "-"
+            } else {
+                newRows.sumOf { it.timeInMillis.toLong() }.let {
+                    "$it"
+                }
+            }
 
             val diffRow = DiffTableRow(
                 name = name,
                 beforeTimeInMs = beforeTimeInMs,
                 afterTimeInMs = afterTimeInMs,
-                beforeTimestamp = oldRow?.timestamp ?: "-",
-                afterTimestamp = newRow?.timestamp ?: "-",
                 diff = diffInMs,
                 countDiff = diffCount,
                 isLargest = false,
