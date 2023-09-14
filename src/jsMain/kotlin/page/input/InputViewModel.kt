@@ -79,7 +79,7 @@ class InputViewModel(
         }
 
         fun validateAndAppend(key: String, pivotInput: String) {
-            for (pivotNode in pivotInput.split("\n")) {
+            for (pivotNode in pivotInput.split("\n").filter { it.trim().isNotBlank() }) {
                 if (!pivotNode.trim().matches(Core.rowRegex)) {
                     errorBuilder.append("Invalid $key input '$pivotNode'.".also { console.error(it) })
                 }

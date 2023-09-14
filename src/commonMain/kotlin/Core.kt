@@ -1,5 +1,3 @@
-import kotlin.math.roundToInt
-
 object Core {
 
     fun diff(beforeTable: List<PivotTableRow>, afterTable: List<PivotTableRow>): List<DiffTableRow> {
@@ -30,14 +28,14 @@ object Core {
                 }
             }
 
-            val oldCount = if(oldRows.isEmpty()){
+            val oldCount = if (oldRows.isEmpty()) {
                 -1
-            }else{
+            } else {
                 oldRows.sumOf { it.count }
             }
-            val newCount = if(newRows.isEmpty()){
+            val newCount = if (newRows.isEmpty()) {
                 -1
-            }else{
+            } else {
                 newRows.sumOf { it.count }
             }
 
@@ -55,7 +53,7 @@ object Core {
                 }
             }
 
-            val beforeTimeInMs = if(oldRows.isEmpty()) {
+            val beforeTimeInMs = if (oldRows.isEmpty()) {
                 "-"
             } else {
                 oldRows.sumOf { it.timeInMillis.toLong() }.let {
@@ -63,7 +61,7 @@ object Core {
                 }
             }
 
-            val afterTimeInMs = if(newRows.isEmpty()) {
+            val afterTimeInMs = if (newRows.isEmpty()) {
                 "-"
             } else {
                 newRows.sumOf { it.timeInMillis.toLong() }.let {
@@ -100,23 +98,26 @@ object Core {
         return diffList
     }
 
-    val rowRegex = "(?<name>.+)\\t(?<timestamp>.+)\\t(?<x>.+)\\t(?<count>\\d+)\\tarrow_right".toRegex()
+    val rowRegex = "(?<name>.+)\\t(?<timestamp>.+)\\t(?<x>.+)\\t(?<count>\\d+).*".toRegex()
 
     fun String.toTable(): List<PivotTableRow> {
         val rows = mutableListOf<PivotTableRow>()
-        split("\n").forEach { line ->
-            rowRegex.find(line)?.let {
-                val (name, timestamp, _, count) = it.destructured
-                rows.add(
-                    PivotTableRow(
-                        name,
-                        timestamp,
-                        parseTimestampToMilliseconds(timestamp),
-                        count.toInt()
+        split("\n")
+            .map { line -> line.trim() }
+            .filter { line -> line.isNotBlank() }
+            .forEach { line ->
+                rowRegex.find(line)?.let {
+                    val (name, timestamp, _, count) = it.destructured
+                    rows.add(
+                        PivotTableRow(
+                            name,
+                            timestamp,
+                            parseTimestampToMilliseconds(timestamp),
+                            count.toInt()
+                        )
                     )
-                )
-            } ?: error("Couldn't parse '$line'")
-        }
+                } ?: error("Couldn't parse '$line'")
+            }
         return rows
     }
 
