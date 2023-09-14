@@ -1,13 +1,10 @@
-import kotlinx.browser.window
 import org.jetbrains.compose.web.renderComposable
-import page.input.InputPage
-import page.input.InputViewModel
-import page.result.ResultPage
+import page.input.App
 
 fun main() {
     renderComposable(rootElementId = "root") {
         // redirector
-        InputPage()
+        App()
         // input : path = empty
         // result = result/$local_cache_key
     }

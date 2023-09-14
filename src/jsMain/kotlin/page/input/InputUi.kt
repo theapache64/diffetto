@@ -1,9 +1,8 @@
 package page.input
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.key
 import common.ErrorUi
-import common.Header
 import org.jetbrains.compose.web.attributes.ButtonType
 import org.jetbrains.compose.web.attributes.placeholder
 import org.jetbrains.compose.web.attributes.rows
@@ -22,50 +21,19 @@ import org.jetbrains.compose.web.dom.Form
 import org.jetbrains.compose.web.dom.Label
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.dom.TextArea
-import page.result.ResultPage
-import repo.CacheRepoImpl
+
 
 private const val PLACEHOLDER_PIVOT_INPUT = "Paste your perfetto pivot table data here"
 
 @Composable
-fun InputPage(
-    inputViewModel: InputViewModel = remember {
-        InputViewModel(
-            CacheRepoImpl()
-        )
-    },
-
-    ) {
-    Div(
-        attrs = {
-            classes("container-fluid")
-
-        }
-    ) {
-
-        // Header
-        Header()
-
-        // Error
-        if (inputViewModel.errorMsg.isNotBlank()) {
-            ErrorUi(inputViewModel.errorMsg)
-        }
-
-        if (inputViewModel.isReadyToShowPivotData) {
-            ResultPage(
-                inputViewModel.pivotData
-            )
-        } else {
-            InputForm(inputViewModel)
-        }
-
-    }
-}
-
-@Composable
-private fun InputForm(
+fun InputUi(
     viewModel: InputViewModel
 ) {
+    // Error
+    if (viewModel.errorMsg.isNotBlank()) {
+        ErrorUi(viewModel.errorMsg)
+    }
+
     // Main
     Form(
         attrs = {
@@ -109,23 +77,50 @@ private fun InputForm(
         Div(attrs = {
             classes("row")
         }) {
-            Div(attrs = {
-                classes("col-lg-12")
-            }) {
-                Button(
-                    attrs = {
-                        classes("btn", "btn-outline-primary")
-                        style {
-                            marginTop(10.px)
-                            width(100.percent)
+
+            if(viewModel.pivotData.before.isBlank() || viewModel.pivotData.after.isBlank()){
+                key("fill-sample-button"){
+                    Div(attrs = {
+                        classes("col-lg-12")
+                    }) {
+                        Button(
+                            attrs = {
+                                classes("btn", "btn-outline-secondary")
+                                style {
+                                    marginTop(10.px)
+                                    width(100.percent)
+                                }
+                                onClick {
+                                    viewModel.onFillSampleDataCLicked()
+                                }
+                                type(ButtonType.Button)
+                            }
+                        ) {
+                            Text("🧪 Fill Sample Data")
                         }
-                        onClick {
-                            viewModel.onButtonClicked()
-                        }
-                        type(ButtonType.Button)
                     }
-                ) {
-                    Text("🧪 Find Diff")
+                }
+            }else{
+                key("find-diff-button"){
+                    Div(attrs = {
+                        classes("col-lg-12")
+                    }) {
+                        Button(
+                            attrs = {
+                                classes("btn", "btn-outline-primary")
+                                style {
+                                    marginTop(10.px)
+                                    width(100.percent)
+                                }
+                                onClick {
+                                    viewModel.onButtonClicked()
+                                }
+                                type(ButtonType.Button)
+                            }
+                        ) {
+                            Text("🔎 Find Diff")
+                        }
+                    }
                 }
             }
         }

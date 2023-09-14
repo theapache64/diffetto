@@ -26,8 +26,8 @@ class InputViewModel(
     var pivotData by mutableStateOf(
         PivotData(
             "",
-            cacheRepo.getString(KEY_BEFORE_CACHE) ?: DEFAULT_BEFORE_INPUT,
-            cacheRepo.getString(KEY_AFTER_CACHE) ?: DEFAULT_AFTER_INPUT,
+            cacheRepo.getString(KEY_BEFORE_CACHE) ?: "",
+            cacheRepo.getString(KEY_AFTER_CACHE) ?: "",
         )
     )
         private set
@@ -86,6 +86,13 @@ class InputViewModel(
         validateAndAppend("after", after)
 
         return if (errorBuilder.isBlank()) null else errorBuilder.toString()
+    }
+
+    fun onFillSampleDataCLicked() {
+        pivotData = pivotData.copy(
+            before = DEFAULT_BEFORE_INPUT,
+            after = DEFAULT_AFTER_INPUT
+        )
     }
 }
 

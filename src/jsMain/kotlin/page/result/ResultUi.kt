@@ -22,7 +22,7 @@ import org.jetbrains.compose.web.dom.Tr
 import repo.PrefRepoImpl
 
 @Composable
-fun ResultPage(
+fun ResultUi(
     pivotData: PivotData,
     viewModel: ResultViewModel = remember {
         ResultViewModel(
@@ -117,7 +117,7 @@ fun ResultPage(
                             attr("data-sort-name", "Diff (ms)")
                             attr("data-sort-order", "desc")
                             attr("data-pagination", "true")
-                            attr("data-page-size", "300")
+                            attr("data-page-size", "50")
                             attr("data-pagination-v-align", "both")
                             attr("data-search-highlight", "true")
 
