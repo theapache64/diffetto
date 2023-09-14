@@ -8,7 +8,31 @@
 <img alt="Twitter: theapache64" src="https://img.shields.io/twitter/follow/theapache64.svg?style=social" />
 </a>
 
-> An extension web app for Perfetto
+> A tool to differentiate between two perfetto traces
+
+## ⌨️ Usage
+1. Upload your first trace to https://ui.perfetto.dev/
+2. Open your application package name and select the area you want to compare
+
+https://github.com/theapache64/diffetto/assets/9678279/512d2935-014a-48b7-9d78-260d401cf1f2
+
+3. Copy the Pivot Table data
+
+
+https://github.com/theapache64/diffetto/assets/9678279/c1bb0e3e-ea0f-4445-948d-ca81626af978
+
+4. Repeat step 1-3 for the second trace also
+
+5. Now paste the first trace Pivot Table data to "Before", and the second to "After"
+
+   ![image](https://github.com/theapache64/diffetto/assets/9678279/ef92faa1-aa53-4912-baaa-ad1dd608f546)
+
+7. Click on "Find Diff" and you'll get the Diffetto table
+
+![image](https://github.com/theapache64/diffetto/assets/9678279/efaf2731-f53f-42fb-b34f-6903a672686f)
+
+
+
 
 ## 🏃 Run
 
