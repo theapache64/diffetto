@@ -54,15 +54,6 @@ fun ResultPage(
                     Text(uiState.name)
                 }
 
-                /**
-                 * <div class="form-check">
-                 *   <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                 *   <label class="form-check-label" for="flexCheckDefault">
-                 *     Default checkbox
-                 *   </label>
-                 * </div>
-                 */
-
                 Div(
                     attrs = {
                         classes("d-flex","justify-content-end")
@@ -127,6 +118,8 @@ fun ResultPage(
                                 classes("table", "table-bordered")
                                 attr("data-toggle", "table")
                                 attr("data-search", "true")
+                                attr("data-sort-name","Diff (ms)")
+                                attr("data-sort-order","desc")
                             }
                         ) {
                             Thead {
@@ -137,6 +130,7 @@ fun ResultPage(
                                         key(columnName) {
                                             Th(
                                                 attrs = {
+                                                    attr("data-field", columnName)
                                                     attr("data-sortable", "true")
                                                 }
                                             ) {

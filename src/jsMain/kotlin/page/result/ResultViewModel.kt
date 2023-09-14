@@ -122,7 +122,6 @@ class ResultViewModel(
     private fun removeLineNoFromRowName(name: String): String {
         val result = lineNoRegEx.find(name)
         if (result != null) {
-            println("matched -> ${result.groupValues}")
             return result.groupValues.getOrNull(1) ?: name
         }
         return name
