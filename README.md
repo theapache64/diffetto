@@ -29,8 +29,7 @@ https://github.com/theapache64/diffetto/assets/9678279/c1bb0e3e-ea0f-4445-948d-c
 
 7. Click on "Find Diff" and you'll get the Diffetto table
 
-![image](https://github.com/theapache64/diffetto/assets/9678279/efaf2731-f53f-42fb-b34f-6903a672686f)
-
+![image](https://github.com/theapache64/diffetto/assets/9678279/69d2e639-3077-4665-8916-e5eae7e6bc81)
 
 
 
