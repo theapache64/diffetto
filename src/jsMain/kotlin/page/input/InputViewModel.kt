@@ -33,7 +33,7 @@ class InputViewModel(
         private set
 
 
-    var isReadyToShowPivotData by mutableStateOf<Boolean>(false)
+    var isReadyToShowPivotData by mutableStateOf<Boolean>(true)
         private set
 
     fun onBeforeInputChanged(newInput: String) {
