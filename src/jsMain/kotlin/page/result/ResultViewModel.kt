@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import kotlinx.browser.document
 import repo.PrefRepo
 import kotlin.js.Date
+import kotlin.time.measureTime
 
 sealed interface ResultUiState {
     data object Idle : ResultUiState
@@ -76,6 +77,9 @@ class ResultViewModel(
     var isIgnoreLambda by mutableStateOf(prefRepo.get(KEY_IS_IGNORE_LAMBDA)?.toBoolean() ?: false)
         private set
 
+    var downloadData by mutableStateOf("")
+        private set
+
     fun init(pivotData : PivotData) {
         this.pivotData = pivotData
         refreshTable()
@@ -92,7 +96,7 @@ class ResultViewModel(
         val afterTable = pivotData.after
             .toTable()
             .filters()
-        val diffTable = diff(beforeTable, afterTable)
+        val diffTable = diff(beforeTable, afterTable).sortedByDescending { it.diff }
 
         if (diffTable.isEmpty()) {
             errorMsg = "Something went wrong. Diff table looks empty 🤔"
@@ -100,6 +104,19 @@ class ResultViewModel(
         }
 
         updateState(ResultUiState.Success(pivotData.resultName, diffTable, -1))
+
+        measureTime {
+            val csvBuilder = StringBuilder()
+            // header
+            csvBuilder.append("Name,Before (ms),After (ms),Diff (ms),Count diff\n")
+            for(row in diffTable){
+                csvBuilder.append("${row.name},${row.beforeTimeInMs},${row.afterTimeInMs},${row.diff},${row.countDiff}\n")
+            }
+
+            downloadData = csvBuilder.toString()
+        }.let {
+            println("CSV prep took ${it.inWholeMilliseconds} ms")
+        }
     }
 
     private fun List<PivotTableRow>.filters(): List<PivotTableRow> {

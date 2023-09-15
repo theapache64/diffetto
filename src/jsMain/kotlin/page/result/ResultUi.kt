@@ -8,6 +8,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import common.ErrorUi
 import org.jetbrains.compose.web.attributes.InputType
+import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.H2
 import org.jetbrains.compose.web.dom.Input
@@ -123,6 +124,19 @@ fun ResultUi(
                         Text("Ignore lambda")
                     }
                 }
+
+                // <a href="#link" class="btn btn-info" role="button">Link Button</a>
+                A(
+                    href = "data:application/octet-stream,${viewModel.downloadData}",
+                    attrs = {
+                        attr("download", "diffetto_${uiState.name.asFileName()}.csv")
+                        classes("btn", "btn-outline-success", "btn-sm", "ms-2")
+                        attr("role", "button")
+                    },
+                ) {
+                    Text("▽ DOWNLOAD as CSV")
+                }
+
             }
 
             key(uiState.createdAt.toString()) {
@@ -140,7 +154,7 @@ fun ResultUi(
                             attr("data-sort-name", "Diff (ms)")
                             attr("data-sort-order", "desc")
                             attr("data-pagination", "true")
-                            attr("data-page-size", "50")
+                            attr("data-page-size", "300")
                             attr("data-pagination-v-align", "both")
                             attr("data-search-highlight", "true")
 
@@ -195,4 +209,8 @@ fun ResultUi(
             }
         }
     }
+}
+
+private fun String.asFileName(): String {
+    return this.replace("\\W+".toRegex(),"_")
 }
