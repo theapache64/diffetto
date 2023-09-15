@@ -100,6 +100,29 @@ fun ResultUi(
                         Text("Ignore line number")
                     }
                 }
+
+                Div(
+                    attrs = {
+                        classes("form-check", "ms-2")
+                    }
+                ) {
+                    Input(
+                        type = InputType.Checkbox,
+                        attrs = {
+                            id("cbIgnoreLambda")
+                            classes("form-check-input")
+                            checked(viewModel.isIgnoreLambda)
+                            onInput {
+                                viewModel.onIgnoreLambdaChanged(it.value)
+                            }
+                        }
+                    )
+                    Label(
+                        forId = "cbIgnoreLambda"
+                    ) {
+                        Text("Ignore lambda")
+                    }
+                }
             }
 
             key(uiState.createdAt.toString()) {
