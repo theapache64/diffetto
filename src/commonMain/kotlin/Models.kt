@@ -12,6 +12,8 @@ data class DiffTableRow(
     val beforeTimeInMs : String,
     val afterTimeInMs : String,
     val diff: Long?,
+    val beforeCount : Int,
+    val afterCount : Int,
     val countDiff: String,
     var isLargest: Boolean,
     var isSmallest: Boolean

@@ -74,6 +74,8 @@ object Core {
                 beforeTimeInMs = beforeTimeInMs,
                 afterTimeInMs = afterTimeInMs,
                 diff = diffInMs,
+                beforeCount = oldCount,
+                afterCount = newCount,
                 countDiff = diffCount,
                 isLargest = false,
                 isSmallest = false

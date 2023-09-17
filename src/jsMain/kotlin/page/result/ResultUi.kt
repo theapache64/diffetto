@@ -195,7 +195,14 @@ fun ResultUi(
                                         Td {
                                             Text("${row.diff ?: 0}")
                                         }
-                                        Td { Text(row.countDiff) }
+                                        Td(
+                                            attrs = {
+                                              title("""
+                                                  before: ${row.beforeCount}
+                                                  after: ${row.afterCount}
+                                              """.trimIndent())
+                                            },
+                                        ) { Text(row.countDiff) }
                                     }
                                 }
                             }
