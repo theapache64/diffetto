@@ -58,6 +58,11 @@ class ResultViewModel(
             "Record View#draw\\(\\)"
         ).joinToString(separator = "|", prefix = "^(", postfix = ").*").toRegex()
 
+        val specialSystemCallsRegex = listOf(
+            "android.app.ActivityThread.handleBindApplication",
+            "android.app.ActivityThread.installContentProviders",
+        ).joinToString(separator = "|", prefix = "^(", postfix = ").*").toRegex()
+
         val lineNoRegEx = "^(?<title>.+) (?<lineNo>\\(.+:\\d+\\))\$".toRegex()
     }
 
@@ -140,7 +145,7 @@ class ResultViewModel(
     private fun List<PivotTableRow>.checkSystemCallsFilter(): List<PivotTableRow> {
         if (!isHideFrameworkCallsEnabled) return this
         return this.filterNot { row ->
-            systemCallsRegex.matches(row.name)
+            systemCallsRegex.matches(row.name) && !specialSystemCallsRegex.matches(row.name)
         }
     }
 
