@@ -57,10 +57,10 @@ fun ResultUi(
                 }
             ) {
                 viewModel.filters.forEach { filter ->
-                    key(filter.title){
+                    key(filter.title) {
                         Div(
                             attrs = {
-                                classes("form-check","ms-2")
+                                classes("form-check", "ms-2")
                             }
                         ) {
                             Input(
@@ -83,39 +83,15 @@ fun ResultUi(
                     }
                 }
 
-                Div(
-                    attrs = {
-                        classes("form-check", "ms-2")
-                    }
-                ) {
-                    Input(
-                        type = InputType.Checkbox,
-                        attrs = {
-                            id("cbIgnoreAnon")
-                            classes("form-check-input")
-                            checked(viewModel.isIgnoreAnon)
-                            onInput {
-                                viewModel.onIgnoreAnonChanged(it.value)
-                            }
-                        }
-                    )
-                    Label(
-                        forId = "cbIgnoreAnon"
-                    ) {
-                        Text("Ignore anonymous")
-                    }
-                }
-
-                // <a href="#link" class="btn btn-info" role="button">Link Button</a>
                 A(
-                    href = "data:application/octet-stream,${viewModel.downloadData}",
+                    href = "data:application/octet-stream,${viewModel.exportData}",
                     attrs = {
                         attr("download", "diffetto_${uiState.name.asFileName()}.csv")
                         classes("btn", "btn-outline-success", "btn-sm", "ms-2")
                         attr("role", "button")
                     },
                 ) {
-                    Text("▽ DOWNLOAD as CSV")
+                    Text("🚚 Export")
                 }
 
             }
@@ -151,7 +127,7 @@ fun ResultUi(
                                             attrs = {
                                                 attr("data-field", columnName)
                                                 attr("data-sortable", "true")
-                                                attr("data-searchable", (columnName=="Name").toString())
+                                                attr("data-searchable", (columnName == "Name").toString())
                                             }
                                         ) {
                                             Text(columnName)
@@ -179,10 +155,12 @@ fun ResultUi(
                                         }
                                         Td(
                                             attrs = {
-                                              title("""
+                                                title(
+                                                    """
                                                   before: ${row.beforeCount}
                                                   after: ${row.afterCount}
-                                              """.trimIndent())
+                                              """.trimIndent()
+                                                )
                                             },
                                         ) { Text(row.countDiff) }
                                     }
@@ -201,5 +179,5 @@ fun ResultUi(
 }
 
 private fun String.asFileName(): String {
-    return this.replace("\\W+".toRegex(),"_")
+    return this.replace("\\W+".toRegex(), "_")
 }

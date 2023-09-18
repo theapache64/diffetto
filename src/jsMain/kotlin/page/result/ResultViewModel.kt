@@ -8,6 +8,7 @@ import PivotTableRow
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import core.AnonFilter
 import core.Filter
 import core.FrameworkCallsFilter
 import core.IgnoreLineFilter
@@ -24,17 +25,14 @@ sealed interface ResultUiState {
 }
 
 class ResultViewModel(
-    private val prefRepo: PrefRepo,
+    prefRepo: PrefRepo,
 ) {
 
     val filters = listOf(
-        FrameworkCallsFilter(prefRepo), IgnoreLineFilter(prefRepo)
+        FrameworkCallsFilter(prefRepo),
+        IgnoreLineFilter(prefRepo),
+        AnonFilter(prefRepo)
     )
-
-    companion object {
-        private const val KEY_IS_IGNORE_ANON = "is_ignore_anon"
-
-    }
 
     private lateinit var pivotData: PivotData
     var errorMsg by mutableStateOf("")
@@ -43,10 +41,7 @@ class ResultViewModel(
     var uiState by mutableStateOf<ResultUiState>(ResultUiState.Idle)
         private set
 
-    var isIgnoreAnon by mutableStateOf(prefRepo.get(KEY_IS_IGNORE_ANON)?.toBoolean() ?: false)
-        private set
-
-    var downloadData by mutableStateOf("")
+    var exportData by mutableStateOf("")
         private set
 
     fun init(pivotData: PivotData) {
@@ -73,12 +68,12 @@ class ResultViewModel(
         measureTime {
             val csvBuilder = StringBuilder()
             // header
-            csvBuilder.append("Name,Before (ms),After (ms),Diff (ms),Count diff\n")
+            csvBuilder.append("Name,Before (ms),After (ms),Diff (ms),Count diff%0A")
             for (row in diffTable) {
                 csvBuilder.append("${row.name},${row.beforeTimeInMs},${row.afterTimeInMs},${row.diff},${row.countDiff}%0A")
             }
 
-            downloadData = csvBuilder.toString()
+            exportData = csvBuilder.toString()
         }.let {
             println("CSV prep took ${it.inWholeMilliseconds} ms")
         }
@@ -91,19 +86,7 @@ class ResultViewModel(
                 list = filter.apply(list)
             }
         }
-        return list.checkIgnoreAnonFilter()
-    }
-
-    private fun List<PivotTableRow>.checkIgnoreAnonFilter(): List<PivotTableRow> {
-        if (!isIgnoreAnon) return this
-        this.forEach { row ->
-            row.name = removeAnon(row.name)
-        }
-        return this
-    }
-
-    private fun removeAnon(name: String): String {
-        return name.replace(".<anonymous>", "")
+        return list
     }
 
     private fun updateState(newState: ResultUiState.Success) {
@@ -113,12 +96,6 @@ class ResultViewModel(
     fun onTableStructureReady() {
         println("enable bootstrap table powers!")
         js("\$('table').bootstrapTable()")
-    }
-
-    fun onIgnoreAnonChanged(newValue: Boolean) {
-        isIgnoreAnon = newValue
-        prefRepo.set(KEY_IS_IGNORE_ANON, newValue.toString())
-        refreshTable()
     }
 
     fun onFilterChanged(filter: Filter, newValue: Boolean) {
