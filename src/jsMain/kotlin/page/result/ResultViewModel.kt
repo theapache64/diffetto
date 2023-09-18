@@ -115,7 +115,7 @@ class ResultViewModel(
             // header
             csvBuilder.append("Name,Before (ms),After (ms),Diff (ms),Count diff\n")
             for(row in diffTable){
-                csvBuilder.append("${row.name},${row.beforeTimeInMs},${row.afterTimeInMs},${row.diff},${row.countDiff}\n")
+                csvBuilder.append("${row.name},${row.beforeTimeInMs},${row.afterTimeInMs},${row.diff},${row.countDiff}%0A")
             }
 
             downloadData = csvBuilder.toString()
