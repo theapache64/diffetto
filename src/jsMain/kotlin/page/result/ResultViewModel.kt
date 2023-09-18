@@ -34,7 +34,7 @@ class ResultViewModel(
 
         private const val KEY_IS_HIDE_FRAMEWORK_CALLS = "is_hide_framework_calls_enabled"
         private const val KEY_IS_IGNORE_LINE_NO = "is_ignore_line_number"
-        private const val KEY_IS_IGNORE_LAMBDA = "is_ignore_lambda"
+        private const val KEY_IS_IGNORE_ANON = "is_ignore_anon"
 
         val systemCallsRegex = listOf(
             "androidx.compose.",
@@ -79,7 +79,7 @@ class ResultViewModel(
     var isIgnoreLineNoEnabled by mutableStateOf(prefRepo.get(KEY_IS_IGNORE_LINE_NO)?.toBoolean() ?: false)
         private set
 
-    var isIgnoreLambda by mutableStateOf(prefRepo.get(KEY_IS_IGNORE_LAMBDA)?.toBoolean() ?: false)
+    var isIgnoreAnon by mutableStateOf(prefRepo.get(KEY_IS_IGNORE_ANON)?.toBoolean() ?: false)
         private set
 
     var downloadData by mutableStateOf("")
@@ -127,18 +127,18 @@ class ResultViewModel(
     private fun List<PivotTableRow>.filters(): List<PivotTableRow> {
         return this.checkSystemCallsFilter()
             .checkLineNoFilter()
-            .checkIgnoreLambdaFilter()
+            .checkIgnoreAnonFilter()
     }
 
-    private fun List<PivotTableRow>.checkIgnoreLambdaFilter(): List<PivotTableRow> {
-        if (!isIgnoreLambda) return this
+    private fun List<PivotTableRow>.checkIgnoreAnonFilter(): List<PivotTableRow> {
+        if (!isIgnoreAnon) return this
         this.forEach { row ->
-            row.name = removeLambda(row.name)
+            row.name = removeAnon(row.name)
         }
         return this
     }
 
-    private fun removeLambda(name: String): String {
+    private fun removeAnon(name: String): String {
         return name.replace(".<anonymous>", "")
     }
 
@@ -194,9 +194,9 @@ class ResultViewModel(
         js("\$('table').bootstrapTable()")
     }
 
-    fun onIgnoreLambdaChanged(newValue: Boolean) {
-        isIgnoreLambda = newValue
-        prefRepo.set(KEY_IS_IGNORE_LAMBDA, newValue.toString())
+    fun onIgnoreAnonChanged(newValue: Boolean) {
+        isIgnoreAnon = newValue
+        prefRepo.set(KEY_IS_IGNORE_ANON, newValue.toString())
         refreshTable()
     }
 }

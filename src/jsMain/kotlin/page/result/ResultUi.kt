@@ -110,18 +110,18 @@ fun ResultUi(
                     Input(
                         type = InputType.Checkbox,
                         attrs = {
-                            id("cbIgnoreLambda")
+                            id("cbIgnoreAnon")
                             classes("form-check-input")
-                            checked(viewModel.isIgnoreLambda)
+                            checked(viewModel.isIgnoreAnon)
                             onInput {
-                                viewModel.onIgnoreLambdaChanged(it.value)
+                                viewModel.onIgnoreAnonChanged(it.value)
                             }
                         }
                     )
                     Label(
-                        forId = "cbIgnoreLambda"
+                        forId = "cbIgnoreAnon"
                     ) {
-                        Text("Ignore lambda")
+                        Text("Ignore anonymous")
                     }
                 }
 
@@ -170,6 +170,7 @@ fun ResultUi(
                                             attrs = {
                                                 attr("data-field", columnName)
                                                 attr("data-sortable", "true")
+                                                attr("data-searchable", (columnName=="Name").toString())
                                             }
                                         ) {
                                             Text(columnName)
