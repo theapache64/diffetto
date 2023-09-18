@@ -20,11 +20,6 @@ sealed interface ResultUiState {
     ) : ResultUiState
 }
 
-external interface BootstrapTable {
-    fun bootstrapTable()
-    // etc
-}
-
 
 class ResultViewModel(
     private val prefRepo: PrefRepo,
