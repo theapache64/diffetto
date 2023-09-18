@@ -6,7 +6,7 @@ import repo.PrefRepo
 class AnonFilter(
     prefRepo: PrefRepo
 )  : Filter(
-    title = "Ignore anonymouse",
+    title = "Ignore anonymous",
     isValuePreserved = true,
     defaultValue = false,
     prefRepo = prefRepo
