@@ -11,7 +11,7 @@ import repo.CacheRepo
 import kotlin.js.Date
 
 class InputViewModel(
-    val cacheRepo: CacheRepo
+    private val cacheRepo: CacheRepo
 ) {
 
     companion object {
@@ -32,8 +32,7 @@ class InputViewModel(
     )
         private set
 
-
-    var isReadyToShowPivotData by mutableStateOf<Boolean>(false)
+    var isReadyToShowPivotData by mutableStateOf<Boolean>(window.location.search.contains("result"))
         private set
 
     fun onBeforeInputChanged(newInput: String) {
@@ -59,7 +58,10 @@ class InputViewModel(
             name = Date().toString()
         }
         pivotData = pivotData.copy(resultName = name)
+        onBeforeInputChanged(newInput = pivotData.before)
+        onAfterInputChanged(newInput = pivotData.after)
         isReadyToShowPivotData = true
+        window.history.replaceState("", "","?result");
     }
 
 
