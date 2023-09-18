@@ -1,10 +1,9 @@
 package core
 
 import PivotTableRow
-import page.result.ResultViewModel
 import repo.PrefRepo
 
-class IgnoreLineFilter(
+class LineNoFilter(
     prefRepo: PrefRepo
 )  : Filter(
     title = "Ignore line number",

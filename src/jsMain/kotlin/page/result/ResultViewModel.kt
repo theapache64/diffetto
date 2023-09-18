@@ -11,7 +11,8 @@ import androidx.compose.runtime.setValue
 import core.AnonFilter
 import core.Filter
 import core.FrameworkCallsFilter
-import core.IgnoreLineFilter
+import core.LastHyphenFilter
+import core.LineNoFilter
 import kotlinx.browser.document
 import repo.PrefRepo
 import kotlin.js.Date
@@ -30,8 +31,9 @@ class ResultViewModel(
 
     val filters = listOf(
         FrameworkCallsFilter(prefRepo),
-        IgnoreLineFilter(prefRepo),
-        AnonFilter(prefRepo)
+        LineNoFilter(prefRepo),
+        AnonFilter(prefRepo),
+        LastHyphenFilter(prefRepo)
     )
 
     private lateinit var pivotData: PivotData
