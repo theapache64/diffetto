@@ -56,26 +56,30 @@ fun ResultUi(
                     classes("d-flex", "justify-content-end")
                 }
             ) {
-                Div(
-                    attrs = {
-                        classes("form-check")
-                    }
-                ) {
-                    Input(
-                        type = InputType.Checkbox,
-                        attrs = {
-                            id("cbHideFrameworkCalls")
-                            classes("form-check-input")
-                            checked(viewModel.isHideFrameworkCallsEnabled)
-                            onInput {
-                                viewModel.onHideFrameworkCallsEnabled(it.value)
+                viewModel.filters.forEach { filter ->
+                    key(filter.uniqueKey){
+                        Div(
+                            attrs = {
+                                classes("form-check")
+                            }
+                        ) {
+                            Input(
+                                type = InputType.Checkbox,
+                                attrs = {
+                                    id(filter.uniqueKey)
+                                    classes("form-check-input")
+                                    checked(filter.isEnabled)
+                                    onInput {
+                                        viewModel.onFilterChanged(filter, it.value)
+                                    }
+                                }
+                            )
+                            Label(
+                                forId = filter.uniqueKey
+                            ) {
+                                Text("Hide framework calls")
                             }
                         }
-                    )
-                    Label(
-                        forId = "cbHideFrameworkCalls"
-                    ) {
-                        Text("Hide framework calls")
                     }
                 }
 

@@ -8,6 +8,8 @@ import PivotTableRow
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import core.Filter
+import core.FrameworkCallsFilter
 import kotlinx.browser.document
 import repo.PrefRepo
 import kotlin.js.Date
@@ -20,43 +22,17 @@ sealed interface ResultUiState {
     ) : ResultUiState
 }
 
-
 class ResultViewModel(
     private val prefRepo: PrefRepo,
 ) {
 
-    companion object {
+    val filters = listOf<Filter>(
+        FrameworkCallsFilter(prefRepo)
+    )
 
-        private const val KEY_IS_HIDE_FRAMEWORK_CALLS = "is_hide_framework_calls_enabled"
+    companion object {
         private const val KEY_IS_IGNORE_LINE_NO = "is_ignore_line_number"
         private const val KEY_IS_IGNORE_ANON = "is_ignore_anon"
-
-        val systemCallsRegex = listOf(
-            "androidx.compose.",
-            "android.",
-            "com.android.internal.",
-            "java.",
-            "kotlinx.",
-            "kotlin.",
-            "sun.",
-            "dalvik.",
-            "Choreographer#",
-            "HWUI:",
-            "Compose:",
-            "Recomposer:",
-            "AndroidOwner:",
-            "draw",
-            "animation",
-            "layout",
-            "traversal",
-            "measure",
-            "Record View#draw\\(\\)"
-        ).joinToString(separator = "|", prefix = "^(", postfix = ").*").toRegex()
-
-        val specialSystemCallsRegex = listOf(
-            "android.app.ActivityThread.handleBindApplication",
-            "android.app.ActivityThread.installContentProviders",
-        ).joinToString(separator = "|", prefix = "^(", postfix = ").*").toRegex()
 
         val lineNoRegEx = "^(?<title>.+) (?<lineNo>\\(.+:\\d+\\))\$".toRegex()
     }
@@ -68,9 +44,6 @@ class ResultViewModel(
     var uiState by mutableStateOf<ResultUiState>(ResultUiState.Idle)
         private set
 
-    var isHideFrameworkCallsEnabled by mutableStateOf(/*prefRepo.get(KEY_IS_HIDE_FRAMEWORK_CALLS)?.toBoolean() ?:*/ true)
-        private set
-
     var isIgnoreLineNoEnabled by mutableStateOf(prefRepo.get(KEY_IS_IGNORE_LINE_NO)?.toBoolean() ?: false)
         private set
 
@@ -80,7 +53,7 @@ class ResultViewModel(
     var downloadData by mutableStateOf("")
         private set
 
-    fun init(pivotData : PivotData) {
+    fun init(pivotData: PivotData) {
         this.pivotData = pivotData
         refreshTable()
     }
@@ -109,7 +82,7 @@ class ResultViewModel(
             val csvBuilder = StringBuilder()
             // header
             csvBuilder.append("Name,Before (ms),After (ms),Diff (ms),Count diff\n")
-            for(row in diffTable){
+            for (row in diffTable) {
                 csvBuilder.append("${row.name},${row.beforeTimeInMs},${row.afterTimeInMs},${row.diff},${row.countDiff}%0A")
             }
 
@@ -120,8 +93,13 @@ class ResultViewModel(
     }
 
     private fun List<PivotTableRow>.filters(): List<PivotTableRow> {
-        return this.checkSystemCallsFilter()
-            .checkLineNoFilter()
+        var list = this
+        for (filter in filters) {
+            if (filter.isEnabled) {
+                list = filter.apply(list)
+            }
+        }
+        return list.checkLineNoFilter()
             .checkIgnoreAnonFilter()
     }
 
@@ -135,13 +113,6 @@ class ResultViewModel(
 
     private fun removeAnon(name: String): String {
         return name.replace(".<anonymous>", "")
-    }
-
-    private fun List<PivotTableRow>.checkSystemCallsFilter(): List<PivotTableRow> {
-        if (!isHideFrameworkCallsEnabled) return this
-        return this.filterNot { row ->
-            systemCallsRegex.matches(row.name) && !specialSystemCallsRegex.matches(row.name)
-        }
     }
 
     private fun List<PivotTableRow>.checkLineNoFilter(): List<PivotTableRow> {
@@ -160,17 +131,11 @@ class ResultViewModel(
             newName = result.groupValues.getOrNull(1) ?: name
         }
 
-        if(newName.contains("$1")){
+        if (newName.contains("$1")) {
             newName = newName.substring(0, newName.indexOf("\$1"))
         }
 
         return newName
-    }
-
-    fun onHideFrameworkCallsEnabled(newFocusMode: Boolean) {
-        isHideFrameworkCallsEnabled = newFocusMode
-        prefRepo.set(KEY_IS_HIDE_FRAMEWORK_CALLS, newFocusMode.toString())
-        refreshTable()
     }
 
 
@@ -192,6 +157,11 @@ class ResultViewModel(
     fun onIgnoreAnonChanged(newValue: Boolean) {
         isIgnoreAnon = newValue
         prefRepo.set(KEY_IS_IGNORE_ANON, newValue.toString())
+        refreshTable()
+    }
+
+    fun onFilterChanged(filter: Filter, newValue: Boolean) {
+        filter.setEnabled(newValue)
         refreshTable()
     }
 }
