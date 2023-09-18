@@ -19,10 +19,7 @@ class LastHyphenFilter(
 
     private fun removeLastHyphen(name: String): String {
         val hyphenIndex = name.lastIndexOf('-')
-        println("'$name' -> $hyphenIndex")
         if (hyphenIndex == -1) return name
-        return name.substring(0, hyphenIndex).also {
-            println("'$name' -> '$it'")
-        }
+        return name.substring(0, hyphenIndex)
     }
 }
