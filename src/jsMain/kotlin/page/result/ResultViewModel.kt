@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import core.Filter
 import core.FrameworkCallsFilter
+import core.IgnoreLineFilter
 import kotlinx.browser.document
 import repo.PrefRepo
 import kotlin.js.Date
@@ -26,15 +27,13 @@ class ResultViewModel(
     private val prefRepo: PrefRepo,
 ) {
 
-    val filters = listOf<Filter>(
-        FrameworkCallsFilter(prefRepo)
+    val filters = listOf(
+        FrameworkCallsFilter(prefRepo), IgnoreLineFilter(prefRepo)
     )
 
     companion object {
-        private const val KEY_IS_IGNORE_LINE_NO = "is_ignore_line_number"
         private const val KEY_IS_IGNORE_ANON = "is_ignore_anon"
 
-        val lineNoRegEx = "^(?<title>.+) (?<lineNo>\\(.+:\\d+\\))\$".toRegex()
     }
 
     private lateinit var pivotData: PivotData
@@ -42,9 +41,6 @@ class ResultViewModel(
         private set
 
     var uiState by mutableStateOf<ResultUiState>(ResultUiState.Idle)
-        private set
-
-    var isIgnoreLineNoEnabled by mutableStateOf(prefRepo.get(KEY_IS_IGNORE_LINE_NO)?.toBoolean() ?: false)
         private set
 
     var isIgnoreAnon by mutableStateOf(prefRepo.get(KEY_IS_IGNORE_ANON)?.toBoolean() ?: false)
@@ -63,12 +59,8 @@ class ResultViewModel(
         document.title = "Diffetto - ${pivotData.resultName}"
 
         // Then build the result
-        val beforeTable = pivotData.before
-            .toTable()
-            .filters()
-        val afterTable = pivotData.after
-            .toTable()
-            .filters()
+        val beforeTable = pivotData.before.toTable().filters()
+        val afterTable = pivotData.after.toTable().filters()
         val diffTable = diff(beforeTable, afterTable).sortedByDescending { it.diff }
 
         if (diffTable.isEmpty()) {
@@ -99,8 +91,7 @@ class ResultViewModel(
                 list = filter.apply(list)
             }
         }
-        return list.checkLineNoFilter()
-            .checkIgnoreAnonFilter()
+        return list.checkIgnoreAnonFilter()
     }
 
     private fun List<PivotTableRow>.checkIgnoreAnonFilter(): List<PivotTableRow> {
@@ -115,38 +106,8 @@ class ResultViewModel(
         return name.replace(".<anonymous>", "")
     }
 
-    private fun List<PivotTableRow>.checkLineNoFilter(): List<PivotTableRow> {
-        if (!isIgnoreLineNoEnabled) return this
-        this.forEach { row ->
-            row.name = removeLineNoFromRowName(row.name)
-        }
-        return this
-    }
-
-
-    private fun removeLineNoFromRowName(name: String): String {
-        val result = lineNoRegEx.find(name)
-        var newName = name
-        if (result != null) {
-            newName = result.groupValues.getOrNull(1) ?: name
-        }
-
-        if (newName.contains("$1")) {
-            newName = newName.substring(0, newName.indexOf("\$1"))
-        }
-
-        return newName
-    }
-
-
     private fun updateState(newState: ResultUiState.Success) {
         uiState = newState.copy(createdAt = Date().getMilliseconds())
-    }
-
-    fun onIgnoreLineNoChanged(newValue: Boolean) {
-        isIgnoreLineNoEnabled = newValue
-        prefRepo.set(KEY_IS_IGNORE_LINE_NO, newValue.toString())
-        refreshTable()
     }
 
     fun onTableStructureReady() {

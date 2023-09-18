@@ -57,16 +57,16 @@ fun ResultUi(
                 }
             ) {
                 viewModel.filters.forEach { filter ->
-                    key(filter.uniqueKey){
+                    key(filter.title){
                         Div(
                             attrs = {
-                                classes("form-check")
+                                classes("form-check","ms-2")
                             }
                         ) {
                             Input(
                                 type = InputType.Checkbox,
                                 attrs = {
-                                    id(filter.uniqueKey)
+                                    id(filter.title)
                                     classes("form-check-input")
                                     checked(filter.isEnabled)
                                     onInput {
@@ -75,34 +75,11 @@ fun ResultUi(
                                 }
                             )
                             Label(
-                                forId = filter.uniqueKey
+                                forId = filter.title
                             ) {
-                                Text("Hide framework calls")
+                                Text(filter.title)
                             }
                         }
-                    }
-                }
-
-                Div(
-                    attrs = {
-                        classes("form-check", "ms-2")
-                    }
-                ) {
-                    Input(
-                        type = InputType.Checkbox,
-                        attrs = {
-                            id("cbIgnoreLineNo")
-                            classes("form-check-input")
-                            checked(viewModel.isIgnoreLineNoEnabled)
-                            onInput {
-                                viewModel.onIgnoreLineNoChanged(it.value)
-                            }
-                        }
-                    )
-                    Label(
-                        forId = "cbIgnoreLineNo"
-                    ) {
-                        Text("Ignore line number")
                     }
                 }
 

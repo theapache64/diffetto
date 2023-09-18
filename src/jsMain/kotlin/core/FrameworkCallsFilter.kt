@@ -4,7 +4,7 @@ import PivotTableRow
 import repo.PrefRepo
 
 class FrameworkCallsFilter(prefRepo: PrefRepo) : Filter(
-    uniqueKey = "framework_calls_filter",
+    title = "Hide framework calls",
     isValuePreserved = false,
     defaultValue = true,
     prefRepo = prefRepo
