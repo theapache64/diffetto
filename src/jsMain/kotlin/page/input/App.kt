@@ -24,7 +24,11 @@ fun App(
     ) {
 
         // Header
-        Header()
+        Header(
+            onTitleClicked = {
+                inputViewModel.onTitleClicked()
+            }
+        )
 
         if (inputViewModel.isReadyToShowPivotData) {
             ResultUi(

@@ -1,6 +1,6 @@
 ![](cover.jpeg)
 
-# 🚧 Diffetto
+# ⚡ Diffetto
 
 ![buildStatus](https://img.shields.io/github/workflow/status/theapache64/compose-web-template/Java%20CI%20with%20Gradle?style=plastic)
 ![latestVersion](https://img.shields.io/github/v/release/theapache64/compose-web-template)

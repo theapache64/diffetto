@@ -1,6 +1,7 @@
 package common
 
 import androidx.compose.runtime.Composable
+import org.jetbrains.compose.web.css.cursor
 import org.jetbrains.compose.web.css.marginBottom
 import org.jetbrains.compose.web.css.marginTop
 import org.jetbrains.compose.web.css.px
@@ -9,7 +10,9 @@ import org.jetbrains.compose.web.dom.H1
 import org.jetbrains.compose.web.dom.Text
 
 @Composable
-fun Header() {
+fun Header(
+    onTitleClicked: () -> Unit
+) {
     Div(attrs = {
         classes("row")
     }) {
@@ -22,6 +25,12 @@ fun Header() {
         }) {
             H1(attrs = {
                 classes("text-center")
+                style {
+                    cursor("pointer")
+                }
+                onClick {
+                    onTitleClicked()
+                }
             }) { Text("⚡ diffetto") }
         }
     }

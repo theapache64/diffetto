@@ -96,5 +96,10 @@ class InputViewModel(
             after = DEFAULT_AFTER_INPUT
         )
     }
+
+    fun onTitleClicked() {
+        // go to home page while keeping current page in history
+        window.location.href = URL(window.location.href).origin
+    }
 }
 
