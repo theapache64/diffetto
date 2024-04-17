@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import core.AnonFilter
+import core.ErrorUi
 import core.Filter
 import core.FrameworkCallsFilter
 import core.LastHyphenFilter
@@ -37,7 +38,7 @@ class ResultViewModel(
     )
 
     private lateinit var pivotData: PivotData
-    var errorMsg by mutableStateOf("")
+    var errorUi by mutableStateOf<ErrorUi?>(null)
         private set
 
     var uiState by mutableStateOf<ResultUiState>(ResultUiState.Idle)
@@ -52,32 +53,42 @@ class ResultViewModel(
     }
 
     private fun refreshTable() {
-        // Update window title first
-        document.title = "Diffetto - ${pivotData.resultName}"
+        try {
+            // Update window title first
+            document.title = "Diffetto - ${pivotData.resultName}"
 
-        // Then build the result
-        val beforeTable = pivotData.before.toTable().filters()
-        val afterTable = pivotData.after.toTable().filters()
-        val diffTable = diff(beforeTable, afterTable).sortedByDescending { it.diff }
+            // Then build the result
+            val beforeTable = pivotData.before.toTable().filters()
+            val afterTable = pivotData.after.toTable().filters()
+            val diffTable = diff(beforeTable, afterTable).sortedByDescending { it.diff }
 
-        if (diffTable.isEmpty()) {
-            errorMsg = "Something went wrong. Diff table looks empty 🤔"
-            return
-        }
-
-        updateState(ResultUiState.Success(pivotData.resultName, diffTable, -1))
-
-        measureTime {
-            val csvBuilder = StringBuilder()
-            // header
-            csvBuilder.append("Name,Before (ms),After (ms),Diff (ms),Count diff%0A")
-            for (row in diffTable) {
-                csvBuilder.append("${row.name},${row.beforeTimeInMs},${row.afterTimeInMs},${row.diff},${row.countDiff}%0A")
+            if (diffTable.isEmpty()) {
+                errorUi = ErrorUi(
+                    title = "Something went wrong. Diff table looks empty 🤔",
+                )
+                return
             }
 
-            exportData = csvBuilder.toString()
-        }.let {
-            println("CSV prep took ${it.inWholeMilliseconds} ms")
+            updateState(ResultUiState.Success(pivotData.resultName, diffTable, -1))
+
+            measureTime {
+                val csvBuilder = StringBuilder()
+                // header
+                csvBuilder.append("Name,Before (ms),After (ms),Diff (ms),Count diff%0A")
+                for (row in diffTable) {
+                    csvBuilder.append("${row.name},${row.beforeTimeInMs},${row.afterTimeInMs},${row.diff},${row.countDiff}%0A")
+                }
+
+                exportData = csvBuilder.toString()
+            }.let {
+                println("CSV prep took ${it.inWholeMilliseconds} ms")
+            }
+        }catch (e: Exception){
+            e.printStackTrace()
+            errorUi = ErrorUi(
+                title = "Corrupted Data 😢",
+                stacktrace = e.stackTraceToString()
+            )
         }
     }
 

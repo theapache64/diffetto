@@ -1,9 +1,14 @@
 import kotlinx.serialization.Serializable
 
+sealed class PivotTableTime {
+    data class Float(val value: kotlin.Float) : PivotTableTime()
+    data object DidNotEnd : PivotTableTime()
+}
+
 data class PivotTableRow(
     var name: String,
     val timestamp: String,
-    val timeInMillis: Float,
+    val timeInMillis: PivotTableTime,
     val count: Int
 )
 

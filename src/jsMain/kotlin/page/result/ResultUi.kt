@@ -36,9 +36,10 @@ fun ResultUi(
     }
 
     // Error
-    if (viewModel.errorMsg.isNotBlank()) {
-        ErrorUi(viewModel.errorMsg)
+    viewModel.errorUi?.let {
+        ErrorUi(it)
     }
+
 
     when (val uiState = viewModel.uiState) {
         ResultUiState.Idle -> {

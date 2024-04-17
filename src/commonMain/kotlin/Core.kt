@@ -1,5 +1,12 @@
 object Core {
 
+    fun PivotTableTime.toNumber(): Long {
+        return when (this) {
+            is PivotTableTime.Float -> value.toLong()
+            is PivotTableTime.DidNotEnd -> -1
+        }
+    }
+
     fun diff(beforeTable: List<PivotTableRow>, afterTable: List<PivotTableRow>): List<DiffTableRow> {
         val diffList = mutableListOf<DiffTableRow>()
 
@@ -16,15 +23,17 @@ object Core {
 
             when {
                 oldRows.isNotEmpty() && newRows.isNotEmpty() -> {
-                    diffInMs = (newRows.sumOf { it.timeInMillis.toLong() } - oldRows.sumOf { it.timeInMillis.toLong() })
+                    diffInMs = (newRows.sumOf {
+                        it.timeInMillis.toNumber().zeroIfMinusOne()
+                    } - oldRows.sumOf { it.timeInMillis.toNumber().zeroIfMinusOne() })
                 }
 
                 newRows.isNotEmpty() -> {
-                    diffInMs = newRows.sumOf { it.timeInMillis.toLong() }
+                    diffInMs = newRows.sumOf { it.timeInMillis.toNumber().zeroIfMinusOne() }
                 }
 
                 oldRows.isNotEmpty() -> {
-                    diffInMs = -oldRows.sumOf { it.timeInMillis.toLong() }
+                    diffInMs = -oldRows.sumOf { it.timeInMillis.toNumber().zeroIfMinusOne() }
                 }
             }
 
@@ -53,19 +62,31 @@ object Core {
                 }
             }
 
-            val beforeTimeInMs = if (oldRows.isEmpty()) {
-                "-"
-            } else {
-                oldRows.sumOf { it.timeInMillis.toLong() }.let {
-                    "$it"
+            val beforeTimeInMs = when {
+                oldRows.isEmpty() -> {
+                    "-"
+                }
+                oldRows.isAllDidNotEnd() -> {
+                    "Did not end"
+                }
+                else -> {
+                    oldRows.sumOf { it.timeInMillis.toNumber().zeroIfMinusOne() }.let {
+                        "$it"
+                    }
                 }
             }
 
-            val afterTimeInMs = if (newRows.isEmpty()) {
-                "-"
-            } else {
-                newRows.sumOf { it.timeInMillis.toLong() }.let {
-                    "$it"
+            val afterTimeInMs = when {
+                newRows.isEmpty() -> {
+                    "-"
+                }
+                newRows.isAllDidNotEnd() -> {
+                    "Did not end"
+                }
+                else -> {
+                    newRows.sumOf { it.timeInMillis.toNumber().zeroIfMinusOne() }.let {
+                        "$it"
+                    }
                 }
             }
 
@@ -124,7 +145,8 @@ object Core {
     }
 
 
-    private fun parseTimestampToMilliseconds(timestamp: String): Float {
+    private fun parseTimestampToMilliseconds(timestamp: String): PivotTableTime {
+        if (timestamp == "(Did not end)") return PivotTableTime.DidNotEnd
         var milliseconds = 0f
         val parts = timestamp.split(" ")
         for (part in parts) {
@@ -139,6 +161,18 @@ object Core {
             }
             milliseconds += valueInMs
         }
-        return milliseconds
+        return PivotTableTime.Float(milliseconds)
+    }
+
+    private fun Long.zeroIfMinusOne() : Long {
+        return if (this == -1L) 0 else this
+    }
+
+    private fun List<PivotTableRow>.isAllDidNotEnd(): Boolean {
+        return all { it.timeInMillis == PivotTableTime.DidNotEnd }
     }
 }
+
+
+
+
