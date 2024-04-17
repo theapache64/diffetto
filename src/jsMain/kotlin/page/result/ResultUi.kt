@@ -38,13 +38,15 @@ fun ResultUi(
     // Error
     viewModel.errorUi?.let {
         ErrorUi(it)
-    }
+    } ?: ResultUi(viewModel)
+}
 
-
+@Composable
+private fun ResultUi(viewModel: ResultViewModel) {
     when (val uiState = viewModel.uiState) {
         ResultUiState.Idle -> {
             // nothing
-            Text("Loading...")
+            Text("Loadings...")
         }
 
         is ResultUiState.Success -> {
