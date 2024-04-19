@@ -46,6 +46,10 @@ class ResultViewModel(
     var exportData by mutableStateOf("")
         private set
 
+    var searchText by mutableStateOf("")
+        private set
+
+
     fun init(pivotData: PivotData) {
         this.pivotData = pivotData
         refreshTable()
@@ -109,6 +113,10 @@ class ResultViewModel(
     fun onFilterChanged(filter: Filter, newValue: Boolean) {
         filter.setEnabled(newValue)
         refreshTable()
+    }
+
+    fun onSearchTextUpdated(keyword: String) {
+        this.searchText = keyword
     }
 }
 

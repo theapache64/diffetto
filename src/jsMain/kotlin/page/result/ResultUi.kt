@@ -13,6 +13,7 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.H2
 import org.jetbrains.compose.web.dom.Input
 import org.jetbrains.compose.web.dom.Label
+import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Table
 import org.jetbrains.compose.web.dom.Tbody
 import org.jetbrains.compose.web.dom.Td
@@ -96,7 +97,29 @@ private fun ResultUi(viewModel: ResultViewModel) {
                 ) {
                     Text("🚚 Export")
                 }
+            }
 
+            Div(
+                attrs = {
+                    classes("d-flex", "justify-content-end", "mt-2", "mb-2")
+                }
+            ) {
+                // Search Input
+                Input(
+                    type = InputType.Text,
+                    attrs = {
+                        id("searchInput")
+                        classes("form-control")
+                        attr("aria-describedby", "something")
+                        attr("placeholder", "🔍 Search")
+                        style {
+                            property("width", "300px")
+                        }
+                        onInput {
+                            viewModel.onSearchTextUpdated(it.value)
+                        }
+                    }
+                )
             }
 
             key(uiState.createdAt.toString()) {
@@ -117,7 +140,8 @@ private fun ResultUi(viewModel: ResultViewModel) {
                             attr("data-page-size", "300")
                             attr("data-pagination-v-align", "both")
                             attr("data-search-highlight", "true")
-
+                            attr("data-search-selector","#searchInput")
+                            attr("data-search-text",viewModel.searchText)
                         }
                     ) {
                         Thead {
