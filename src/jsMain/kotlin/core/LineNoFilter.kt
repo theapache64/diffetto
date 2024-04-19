@@ -14,10 +14,8 @@ class LineNoFilter(
     companion object{
         private val lineNoRegEx = "^(?<title>.+) (?<lineNo>\\(.+:\\d+\\))\$".toRegex()
     }
-    override fun apply(list: List<PivotTableRow>): List<PivotTableRow> {
-        return list.onEach { row ->
-            row.name = removeLineNoFromRowName(row.name)
-        }
+    override fun apply(name : String): String  {
+        return removeLineNoFromRowName(name)
     }
 
     private fun removeLineNoFromRowName(name: String): String {

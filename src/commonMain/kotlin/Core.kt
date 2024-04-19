@@ -7,17 +7,19 @@ object Core {
         }
     }
 
-    fun diff(beforeTable: List<PivotTableRow>, afterTable: List<PivotTableRow>): List<DiffTableRow> {
+    fun diff(
+        beforeTable: Map<String, List<PivotTableRow>>,
+        afterTable: Map<String, List<PivotTableRow>>
+    ): List<DiffTableRow> {
         val diffList = mutableListOf<DiffTableRow>()
 
-        val names = beforeTable.map { it.name }.toMutableList()
-            .apply { addAll(afterTable.map { it.name }) }
-            .toSet()
+        val names = beforeTable.keys + afterTable.keys
 
         for (name in names) {
 
-            val oldRows = beforeTable.filter { it.name == name }
-            val newRows = afterTable.filter { it.name == name }
+            val oldRows = beforeTable[name] ?: emptyList()
+            val newRows = afterTable[name] ?: emptyList()
+            println("QuickTag: Core:diff: oldRows: ${oldRows.size} newRows: ${newRows.size}")
             var diffInMs: Long? = null
 
 
@@ -62,33 +64,8 @@ object Core {
                 }
             }
 
-            val beforeTimeInMs = when {
-                oldRows.isEmpty() -> {
-                    "-"
-                }
-                oldRows.isAllDidNotEnd() -> {
-                    "Did not end"
-                }
-                else -> {
-                    oldRows.sumOf { it.timeInMillis.toNumber().zeroIfMinusOne() }.let {
-                        "$it"
-                    }
-                }
-            }
-
-            val afterTimeInMs = when {
-                newRows.isEmpty() -> {
-                    "-"
-                }
-                newRows.isAllDidNotEnd() -> {
-                    "Did not end"
-                }
-                else -> {
-                    newRows.sumOf { it.timeInMillis.toNumber().zeroIfMinusOne() }.let {
-                        "$it"
-                    }
-                }
-            }
+            val beforeTimeInMs = getTimeValue(oldRows)
+            val afterTimeInMs = getTimeValue(newRows)
 
             val diffRow = DiffTableRow(
                 name = name,
@@ -98,50 +75,68 @@ object Core {
                 beforeCount = oldCount,
                 afterCount = newCount,
                 countDiff = diffCount,
-                isLargest = false,
-                isSmallest = false
             )
 
             diffList.add(diffRow)
         }
 
-        if (diffList.isNotEmpty()) {
-            // Finding largest
-            diffList
-                .filter { it.diff != null }
-                .maxByOrNull { it.diff ?: error("diff can't be null") }
-                ?.isLargest = true
+        return diffList
+    }
 
-            diffList
-                .filter { it.diff != null }
-                .minByOrNull { it.diff ?: error("diff can't be null") }
-                ?.isSmallest = true
+    private fun getTimeValue(oldRows: List<PivotTableRow>) = when {
+        oldRows.isEmpty() -> {
+            "-"
         }
 
-        return diffList
+        oldRows.isAllDidNotEnd() -> {
+            "Did not end"
+        }
+
+        else -> {
+            oldRows.sumOf { it.timeInMillis.toNumber().zeroIfMinusOne() }.let {
+                "$it"
+            }
+        }
     }
 
     val rowRegex = "(?<name>.+)\\t(?<timestamp>.+)\\t(?<x>.+)\\t(?<count>\\d+).*".toRegex()
 
-    fun String.toTable(): List<PivotTableRow> {
-        val rows = mutableListOf<PivotTableRow>()
+    fun String.toTable(filters: List<BaseFilter>): Map<String, List<PivotTableRow>> {
+        val rows = mutableMapOf<String, MutableList<PivotTableRow>>()
         split("\n")
             .map { line -> line.trim() }
             .filter { line -> line.isNotBlank() }
             .forEach { line ->
                 rowRegex.find(line)?.let {
                     val (name, timestamp, _, count) = it.destructured
-                    rows.add(
-                        PivotTableRow(
-                            name,
-                            timestamp,
-                            parseTimestampToMilliseconds(timestamp),
-                            count.toInt()
+                    val filteredName = name.apply(filters)
+                    if (filteredName != null) {
+                        val list = rows.getOrPut(
+                            filteredName
+                        ) { mutableListOf() }
+                        list.add(
+                            PivotTableRow(
+                                filteredName,
+                                timestamp,
+                                parseTimestampToMilliseconds(timestamp),
+                                count.toInt()
+                            )
                         )
-                    )
+                    }
                 } ?: error("Couldn't parse '$line'")
             }
         return rows
+    }
+
+    private fun String.apply(filters: List<BaseFilter>): String? {
+        var value = this
+        for (filter in filters) {
+            if (filter.enabled()) {
+                val newValue = filter.apply(value) ?: return null
+                value = newValue
+            }
+        }
+        return value
     }
 
 
@@ -164,7 +159,7 @@ object Core {
         return PivotTableTime.Float(milliseconds)
     }
 
-    private fun Long.zeroIfMinusOne() : Long {
+    private fun Long.zeroIfMinusOne(): Long {
         return if (this == -1L) 0 else this
     }
 

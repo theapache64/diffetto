@@ -1,23 +1,18 @@
 package core
 
-import PivotTableRow
 import repo.PrefRepo
 
 class AnonFilter(
     prefRepo: PrefRepo
-)  : Filter(
+) : Filter(
     title = "Ignore anonymous",
     isValuePreserved = true,
     defaultValue = false,
     prefRepo = prefRepo
 ) {
-    override fun apply(list: List<PivotTableRow>): List<PivotTableRow> {
-        list.forEach { row ->
-            row.name = removeAnon(row.name)
-        }
-        return list
+    override fun apply(name: String): String {
+        return removeAnon(name)
     }
-
 
     private fun removeAnon(name: String): String {
         return name.replace(".<anonymous>", "")

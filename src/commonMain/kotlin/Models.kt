@@ -20,8 +20,6 @@ data class DiffTableRow(
     val beforeCount : Int,
     val afterCount : Int,
     val countDiff: String,
-    var isLargest: Boolean,
-    var isSmallest: Boolean
 )
 
 @Serializable

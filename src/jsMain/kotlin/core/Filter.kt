@@ -1,5 +1,6 @@
 package core
 
+import BaseFilter
 import PivotTableRow
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,8 +12,7 @@ abstract class Filter(
     private val isValuePreserved: Boolean,
     private val defaultValue: Boolean,
     private val prefRepo: PrefRepo
-) {
-    abstract fun apply(list: List<PivotTableRow>): List<PivotTableRow>
+) : BaseFilter {
 
     var isEnabled by mutableStateOf(
         (if (isValuePreserved) prefRepo.get(title)?.toBoolean() else defaultValue) ?: defaultValue
@@ -24,5 +24,9 @@ abstract class Filter(
             prefRepo.set(title, isEnabled.toString())
         }
         this.isEnabled = isEnabled
+    }
+
+    override fun enabled(): Boolean {
+        return isEnabled
     }
 }

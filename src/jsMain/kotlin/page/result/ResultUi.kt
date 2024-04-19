@@ -46,7 +46,7 @@ private fun ResultUi(viewModel: ResultViewModel) {
     when (val uiState = viewModel.uiState) {
         ResultUiState.Idle -> {
             // nothing
-            Text("Loadings...")
+            Text("Loading... (this may take a while)")
         }
 
         is ResultUiState.Success -> {

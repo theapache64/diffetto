@@ -11,10 +11,8 @@ class LastHyphenFilter(
     defaultValue = false,
     prefRepo = prefRepo
 ) {
-    override fun apply(list: List<PivotTableRow>): List<PivotTableRow> {
-        return list.onEach {
-            it.name = removeLastHyphen(it.name)
-        }
+    override fun apply(name : String): String {
+        return removeLastHyphen(name)
     }
 
     private fun removeLastHyphen(name: String): String {

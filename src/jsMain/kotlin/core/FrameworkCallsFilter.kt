@@ -38,9 +38,11 @@ class FrameworkCallsFilter(prefRepo: PrefRepo) : Filter(
         ).joinToString(separator = "|", prefix = "^(", postfix = ").*").toRegex()
     }
 
-    override fun apply(list: List<PivotTableRow>): List<PivotTableRow> {
-        return list.filterNot { row ->
-            systemCallsRegex.matches(row.name) && !specialSystemCallsRegex.matches(row.name)
+    override fun apply(name : String): String?  {
+        return if(systemCallsRegex.matches(name) && !specialSystemCallsRegex.matches(name)){
+            null
+        }else{
+            name
         }
     }
 }
