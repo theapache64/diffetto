@@ -110,7 +110,6 @@ private fun ResultUi(viewModel: ResultViewModel) {
                     attrs = {
                         id("searchInput")
                         classes("form-control")
-                        attr("aria-describedby", "something")
                         attr("placeholder", "🔍 Search")
                         style {
                             property("width", "300px")
