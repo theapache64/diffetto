@@ -80,9 +80,9 @@ class ResultViewModel(
                 measureTime {
                     val csvBuilder = StringBuilder()
                     // header
-                    csvBuilder.append("Name,Before (ms),After (ms),Diff (ms),Count diff%0A")
+                    csvBuilder.append("Name,Before (ms),After (ms),Diff (ms),Before count,After count,Count diff%0A")
                     for (row in diffTable) {
-                        csvBuilder.append("${row.name},${row.beforeTimeInMs},${row.afterTimeInMs},${row.diff},${row.countDiff}%0A")
+                        csvBuilder.append("${row.name},${row.beforeTimeInMs},${row.afterTimeInMs},${row.diff},${row.beforeCount},${row.afterCount},${row.countDiff}%0A")
                     }
 
                     exportData = csvBuilder.toString()

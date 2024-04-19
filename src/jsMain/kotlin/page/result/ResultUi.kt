@@ -146,7 +146,7 @@ private fun ResultUi(viewModel: ResultViewModel) {
                         Thead {
                             Tr {
                                 listOf(
-                                    "Name", "Before (ms)", "After (ms)", "Diff (ms)", "Count diff"
+                                    "Name", "Before (ms)", "After (ms)", "Diff (ms)", "Before count","After count", "Count diff"
                                 ).forEach { columnName ->
                                     key(columnName) {
                                         Th(
@@ -179,6 +179,8 @@ private fun ResultUi(viewModel: ResultViewModel) {
                                         Td {
                                             Text("${row.diff ?: 0}")
                                         }
+                                        Td { Text(row.beforeCount.toString()) }
+                                        Td { Text(row.afterCount.toString()) }
                                         Td(
                                             attrs = {
                                                 title(
