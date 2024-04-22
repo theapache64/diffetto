@@ -11,7 +11,7 @@
 > A tool to differentiate between two perfetto traces
 
 ## ⌨️ Usage
-1. Upload your first trace to https://ui.perfetto.dev/
+1. Upload your first trace to https://ui.perfetto.dev/ (Canary Version)
 2. Open your application package name and select the area you want to compare
 
 https://github.com/theapache64/diffetto/assets/9678279/512d2935-014a-48b7-9d78-260d401cf1f2
