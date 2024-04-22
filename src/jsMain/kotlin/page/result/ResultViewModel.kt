@@ -11,6 +11,7 @@ import core.AnonFilter
 import core.ErrorUi
 import core.Filter
 import core.FrameworkCallsFilter
+import core.IgnoreOwnerThreadId
 import core.LastHyphenFilter
 import core.LineNoFilter
 import kotlinx.browser.document
@@ -33,7 +34,8 @@ class ResultViewModel(
         FrameworkCallsFilter(prefRepo),
         LineNoFilter(prefRepo),
         AnonFilter(prefRepo),
-        LastHyphenFilter(prefRepo)
+        LastHyphenFilter(prefRepo),
+        IgnoreOwnerThreadId(prefRepo)
     )
 
     private lateinit var pivotData: PivotData
