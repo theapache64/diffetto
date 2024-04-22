@@ -11,6 +11,7 @@ import core.AnonFilter
 import core.ErrorUi
 import core.Filter
 import core.FrameworkCallsFilter
+import core.IgnoreFrameNumber
 import core.IgnoreOwnerThreadId
 import core.LastHyphenFilter
 import core.LineNoFilter
@@ -35,7 +36,8 @@ class ResultViewModel(
         LineNoFilter(prefRepo),
         AnonFilter(prefRepo),
         LastHyphenFilter(prefRepo),
-        IgnoreOwnerThreadId(prefRepo)
+        IgnoreOwnerThreadId(prefRepo),
+        IgnoreFrameNumber(prefRepo),
     )
 
     private lateinit var pivotData: PivotData
