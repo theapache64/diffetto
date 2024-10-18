@@ -1,4 +1,5 @@
-![](cover.jpeg)
+![image](https://github.com/user-attachments/assets/23dc180a-e35d-491a-aced-9b1df69b5f9f)
+
 
 # ⚡ Diffetto
 
