@@ -8,6 +8,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import common.ErrorUi
 import org.jetbrains.compose.web.attributes.InputType
+import org.jetbrains.compose.web.css.cursor
 import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.H2
@@ -21,6 +22,7 @@ import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.dom.Th
 import org.jetbrains.compose.web.dom.Thead
 import org.jetbrains.compose.web.dom.Tr
+import page.input.onTitleClicked
 import repo.PrefRepoImpl
 
 @Composable
@@ -51,8 +53,17 @@ private fun ResultUi(viewModel: ResultViewModel) {
         }
 
         is ResultUiState.Success -> {
-            H2 {
-                Text(uiState.name)
+            H2(
+                attrs = {
+                    style {
+                        cursor("pointer")
+                    }
+                    onClick {
+                        onTitleClicked()
+                    }
+                }
+            ) {
+                Text("← ${uiState.name}")
             }
 
             Div(

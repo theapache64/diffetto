@@ -35,7 +35,7 @@ fun App(
         // Header
         Header(
             onTitleClicked = {
-                inputViewModel.onTitleClicked()
+                onTitleClicked()
             }
         )
 

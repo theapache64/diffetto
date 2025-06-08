@@ -10,6 +10,8 @@ import org.w3c.dom.url.URL
 import repo.CacheRepo
 import kotlin.js.Date
 
+const val KEY_RESULT = "result"
+
 class InputViewModel(
     private val cacheRepo: CacheRepo
 ) {
@@ -17,7 +19,7 @@ class InputViewModel(
     companion object {
         private const val KEY_BEFORE_CACHE = "before_cache"
         private const val KEY_AFTER_CACHE = "after_cache"
-        private const val KEY_RESULT = "result"
+
     }
 
 
@@ -62,7 +64,7 @@ class InputViewModel(
         onBeforeInputChanged(newInput = pivotData.before)
         onAfterInputChanged(newInput = pivotData.after)
         isReadyToShowPivotData = true
-        window.history.replaceState("", "","?$KEY_RESULT");
+        window.history.replaceState("", "", "?$KEY_RESULT");
     }
 
 
@@ -97,10 +99,10 @@ class InputViewModel(
             after = DEFAULT_AFTER_INPUT
         )
     }
+}
 
-    fun onTitleClicked() {
-        // go to home page while keeping current page in history
-        window.location.href = URL(window.location.href.replace(KEY_RESULT, "")).href
-    }
+fun onTitleClicked() {
+    // go to home page while keeping current page in history
+    window.location.href = URL(window.location.href.replace(KEY_RESULT, "")).href
 }
 
