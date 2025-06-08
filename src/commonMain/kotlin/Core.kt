@@ -99,7 +99,7 @@ object Core {
         }
     }
 
-    val rowRegex = "(?<name>.+)\\t(?<timestamp>.+)\\t(?<x>.+)\\t(?<count>\\d+).*".toRegex()
+    val rowRegex = "(?<name>.+)\\t(?<timestamp>.+)\\t(?<count>\\d+).*".toRegex()
 
     fun String.toTable(filters: List<BaseFilter>): Map<String, List<PivotTableRow>> {
         val rows = mutableMapOf<String, MutableList<PivotTableRow>>()
@@ -108,7 +108,7 @@ object Core {
             .filter { line -> line.isNotBlank() }
             .forEach { line ->
                 rowRegex.find(line)?.let {
-                    val (name, timestamp, _, count) = it.destructured
+                    val (name, timestamp, count) = it.destructured
                     val filteredName = name.apply(filters)
                     if (filteredName != null) {
                         val list = rows.getOrPut(
